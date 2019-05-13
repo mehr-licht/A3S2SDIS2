@@ -35,10 +35,9 @@ public class BackupUtil implements Runnable {
   @Override
   public void run() {
     while (true) {
-      // Schedule task to send metadata to server
       ScheduledExecutorService scheduledPool = Executors.newScheduledThreadPool(1);
       Future<Boolean> future =
-          scheduledPool.schedule(send_Metadata, BACKUP_INTERVAL, TimeUnit.SECONDS);
+          scheduledPool.schedule(send_metadata, BACKUP_INTERVAL, TimeUnit.SECONDS);
       try {
         future.get();
       } catch (InterruptedException e) {
@@ -50,7 +49,7 @@ public class BackupUtil implements Runnable {
   /**
    * Envia metadata para o Server
    * */
-  Callable<Boolean> send_Metadata =
+  Callable<Boolean> send_metadata =
       () -> {
         File file = get_file_path();
 
