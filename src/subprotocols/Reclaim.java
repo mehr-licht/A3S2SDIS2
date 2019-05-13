@@ -3,84 +3,106 @@ package subprotocols;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-
+import peer.Peer;
 import peer.Peer.channel_type;
 import utils.Protocol_handler;
-import peer.Peer;
 
+/**
+ * classe Reclaim
+ */
 public class Reclaim implements Runnable {
-	
-	private long spaceReclaim;
-	private Peer peer;
-	private ArrayList<String> chunksDeleted;
-	private long diskUsed;
-	private String chunksPath;
-	
-	public Reclaim(long kbytes, Peer peer) {
-		this.spaceReclaim = kbytes * 1000;
-		this.peer = peer;
-		this.diskUsed = peer.get_manager().get_space_used();
-		this.chunksPath = Peer.PEERS_FOLDER + Peer.DISK_FOLDER + this.peer.get_ID() + "/" + Peer.CHUNKS_FOLDER;
-		this.chunksDeleted = new ArrayList<String>();
-	}
 
-	@Override
-	public void run() {
-		getChunksToRemove();
-		sendRemoveMessages();
-		
-		System.out.println("Reclaim finished. Disk usage updated to: " +this.peer.get_manager().get_space_used());
-	}
+  private long space_reclaim;
+  private Peer peer;
+  private ArrayList<String> chunks_deleted;
+  private long disk_used;
+  private String chunks_path;
 
-	private void getChunksToRemove() {
-		while(this.diskUsed > spaceReclaim) {			
-			File chunksFolder = new File(this.chunksPath);
-			File [] chunksList = chunksFolder.listFiles();
-			
-			//No more chunks to delete
-			if(chunksList == null) {
-				System.out.println("No more chunks to erase.");
-				return;
-			}
-			
-			//Remove the first chunk of the list
-			File chunkToDelete = chunksList[0];
-			
-			//Update run-time memory
-			String chunkName = chunkToDelete.getName();
-			chunksDeleted.add(chunkName);
-			this.peer.get_manager().remove_chunk_info(chunkName, this.peer.get_ID());
-			this.peer.get_manager().get_chunks_stored_size().remove(chunkName);
-			this.diskUsed = this.diskUsed - chunkToDelete.length();	
-			
-			//Delete file from disk
-			chunkToDelete.delete();		
-		}
-		
-		this.peer.get_manager().set_space_used(this.diskUsed);
-		this.peer.get_manager().set_max_space(this.spaceReclaim);
-		this.peer.get_manager().save_metadata();
-	}
-	
-	private void sendRemoveMessages() {
-		for(String key : chunksDeleted) {
-			byte [] packet = makeRemoveMessage(key);
-			try {
-				this.peer.send_reply_to_peers(channel_type.MC, packet);
-			} catch (IOException e) {
-				System.out.println("Error sending removed message.");
-			}
-		}
-	}
+  /**
+	 * construtor reclaim
+   * @param kbytes espaço que ser quer
+   * @param peer peer
+   */
+  public Reclaim(long kbytes, Peer peer) {
+    this.space_reclaim = kbytes * 1000;
+    this.peer = peer;
+    this.disk_used = peer.get_manager().get_space_used();
+    this.chunks_path =
+        Peer.PEERS_FOLDER + Peer.DISK_FOLDER + this.peer.get_ID() + "/" + Peer.CHUNKS_FOLDER;
+    this.chunks_deleted = new ArrayList<String>();
+  }
 
-	private byte[] makeRemoveMessage(String key) {
-		String [] fileInfo = key.split("_");
-		
-		String message = "REMOVED" + " " + this.peer.get_protocol_version() + " " + this.peer.get_ID() + " " + fileInfo[1]
-				+ " " + fileInfo[0] + " ";
-		message = message + Protocol_handler.bi_CRLF;
-		
-		return message.getBytes();
-	}
+  /** run do Reclaim */
+  @Override
+  public void run() {
+    get_chunks_to_remove();
+    send_remove_messages();
 
+    System.out.println(
+        "Reclaim terminou. Info de armazenamento actualizado para: "
+            + this.peer.get_manager().get_space_used());
+  }
+
+  /** Obtem chunks para apagar */
+  private void get_chunks_to_remove() {
+    while (this.disk_used > space_reclaim) {
+      File chunks_folder = new File(this.chunks_path);
+      File[] chunks_list = chunks_folder.listFiles();
+
+      if (chunks_list == null) {
+        System.out.println("Não há mais nenhum chunk para apagar.");
+        return;
+      }
+
+      File chunkToDelete = chunks_list[0];
+
+      String chunkName = chunkToDelete.getName();
+      chunks_deleted.add(chunkName);
+      this.peer.get_manager().remove_chunk_info(chunkName, this.peer.get_ID());
+      this.peer.get_manager().get_chunks_stored_size().remove(chunkName);
+      this.disk_used = this.disk_used - chunkToDelete.length();
+
+      chunkToDelete.delete();
+    }
+
+    this.peer.get_manager().set_space_used(this.disk_used);
+    this.peer.get_manager().set_max_space(this.space_reclaim);
+    this.peer.get_manager().save_metadata();
+  }
+
+  /** Envia mensagem remove*/
+  private void send_remove_messages() {
+    for (String key : chunks_deleted) {
+      byte[] packet = make_remove_message(key);
+      try {
+        this.peer.send_reply_to_peers(channel_type.MC, packet);
+      } catch (IOException e) {
+        System.out.println("Erro ao enviar messgem.");
+      }
+    }
+  }
+
+  /**
+	 * Cria mensagem remove
+   * @param key chave
+   * @return mensagem pronta
+   */
+  private byte[] make_remove_message(String key) {
+    String[] fileInfo = key.split("_");
+
+    String message =
+        "REMOVED"
+            + " "
+            + this.peer.get_protocol_version()
+            + " "
+            + this.peer.get_ID()
+            + " "
+            + fileInfo[1]
+            + " "
+            + fileInfo[0]
+            + " ";
+    message = message + Protocol_handler.bi_CRLF;
+
+    return message.getBytes();
+  }
 }
