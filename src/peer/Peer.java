@@ -329,7 +329,7 @@ public class Peer implements My_Remote_Interface {
     server_connection_notification();
   }
 
-  /** // Set client key and truststore */
+  /** Estabelece chave do cliente e truststore */
   private void set_key_truststore() {
     System.setProperty("javax.net.ssl.trustStore", "../SSL/truststore");
     System.setProperty("javax.net.ssl.trustStorePassword", "123456");
