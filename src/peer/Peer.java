@@ -479,7 +479,7 @@ public class Peer implements My_Remote_Interface {
    * @return
    */
   public String get_peer_state() {
-    return new State(this).getState();
+    return new State(this).get_state();
   }
 
    /**
