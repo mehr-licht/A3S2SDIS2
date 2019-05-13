@@ -56,7 +56,7 @@ public class Restore implements Runnable {
 
 			// After 3 attempts the restore protocol stops
 			if (attempts == 3) {
-				System.out.println("File restore finished without success.");
+				System.out.println("Restauro de ficheiro terminou sem sucesso");
 				return;
 			}
 
@@ -79,9 +79,9 @@ public class Restore implements Runnable {
 			try {
 				result = future.get();
 			} catch (InterruptedException e) {
-				System.out.println("Error sending getchunk message");
+				System.out.println("Erro ao enviar mensagem de getchunk");
 			} catch (ExecutionException e) {
-				System.out.println("Error sending getchunk message");
+				System.out.println("Erro ao enviar mensagem de getchunk");
 			}
 
 
@@ -125,13 +125,13 @@ public class Restore implements Runnable {
 				try {
 					outputStream.write(value);
 				} catch (IOException e) {
-					System.out.println("Error writing the chunk");
+					System.out.println("Erro na espera pelo chunk");
 				}
 			});
 
 			outputStream.close();
 		} catch (IOException e) {
-			System.out.println("Error saving the restored chunks");
+			System.out.println("Erro ao gravar os chunks restaurados");
 		}
 	}
 
