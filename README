@@ -1,0 +1,29 @@
+Ao efetuar um pedido de backup não esquecer que a localização do ficheiro tem que ser a pasta “bin/Peers/PeerDisk1/MyFiles” neste caso o IniciatorPeer é o 1, este será sempre apagado ao executar o comando “bash compile.sh”.
+
+Na raiz do projecto compilar ficheiros com →  bash compile.sh;
+Iniciar o RMI com → bash rmi.sh;
+Entrar na pasta bin e iniciar três Master Peer com → java server.Server <ServerId> <porta>,  o ServerId deve ser único e o domínio das portas é  [3000,3002], os Master Peers dever estar na mesma máquina;
+Dentro da pasta bin, iniciar três peers (um terminal para cada) para poder efetuar backup com replicationDegree = 2 → java peer.RunPeer <PeerId> <ServerIp>, o peerId deve ser único e o SeverIp é o ip da máquina onde estão os Master Peers;
+IMPORTANTE, é fundamental que a localização do ficheiro que irá utilizar para fazer backup seja “bin/Peers/PeerDisk<peerId>/MyFiles” ;
+Dentro da pasta bin, iniciar client com → java utils.Client peer<peerId> <protocolo> <fileName> <replicationDegree>, o argumento replicationDegree é apenas para o backup;
+O sistema continua em bom funcionamento mesmo após a perda de um servidor, com → Ctrl + C;
+Também é possível desconectar um peer, o Master Peer irá removê-lo da sua lista de peers ativos → Ctrl + C;
+
+Ubuntu (instruções)
+bash compile.sh
+bash rmi.sh
+cd bin    
+java server.Server 1 3000
+java server.Server 2 3001
+java peer.RunPeer 1 <ServerIp>
+java peer.RunPeer 2 <ServerIp>
+java peer.RunPeer 3 <ServerIp>
+java utils.Client peer1 BACKUP <fileName> <replicationDegree>
+Ctrl + C  → no terminal do Master Peer 1
+java utils.Client peer1 RESTORE <fileName>
+java utils.Client peer1 DELETE <fileName>
+java utils.Client peer3 RECLAIM 64
+java utils.Client peer3 STATE
+java peer.RunPeer 4 <ServerIp>
+java utils.Client peer1 BACKUP <fileName> <replicationDegree>
+
