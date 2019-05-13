@@ -62,7 +62,7 @@ public class Client {
    * Lança o sub-protocolo de BACKUP
    * @param rmi interface rmi
    */
-  private static void case_is_backup(My_Remote_Interface rmi) {
+  private static void case_is_backup(My_Remote_Interface rmi)  {
     try {
       rmi.backup(sub_protocol_args.get(0), Integer.parseInt(sub_protocol_args.get(1)));
     } catch (Exception e) {

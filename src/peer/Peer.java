@@ -570,11 +570,11 @@ public class Peer implements My_Remote_Interface {
   @Override
   public void backup(String filename, int replication_degree) {
     System.out.println("[SERVER " + this.peer_ID + "] Starting backup protocol...");
-    try {
+    //try {
       new Thread(new subprotocols.Backup(filename, replication_degree, this)).start();
-    } catch (IOException e) {
+    /*}/* catch (IOException e) {
       e.printStackTrace();
-    }
+    }*/
   }
 
   /**
