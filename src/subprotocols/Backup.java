@@ -106,17 +106,17 @@ public class Backup implements Runnable {
 
 		boolean backup_done = wait_backup_result(scheduled_pool, thread_results);
 
-		check_backup_done(format, backup_done);
+		print_backup_done(format, backup_done);
 
 		this.peer.get_manager().save_metadata();
   }
 
 	/**
-	 *
-	 * @param format
-	 * @param backup_done
+	 * Notifica se o backup foi feito
+	 * @param format formato da data
+	 * @param backup_done se backup foi feito
 	 */
-	private void check_backup_done(DateFormat format, boolean backup_done) {
+	private void print_backup_done(DateFormat format, boolean backup_done) {
 		if (backup_done) {
 			Date date2 = new Date();
 			System.out.println("BackupUtil completed. " + format.format(date2));
@@ -128,49 +128,59 @@ public class Backup implements Runnable {
 	}
 
 	/**
-	 *
-	 * @param buffer
-	 * @param chunk_no
+	 * Lê chunks
+	 * @param buffer buffer de entrada
+	 * @param chunk_no numero do chunk
 	 * @param thread_results
-	 * @param scheduled_pool
-	 * @param file
+	 * @param scheduled_pool SchedulePool
+	 * @param file ficheiro
 	 * @param need_chunk_zero
-	 * @throws IOException
+	 * @throws IOException Excepção de entrada/saida
 	 */
 	private void read_chunks(byte[] buffer, int chunk_no, List<Future<Boolean>> thread_results,
 			ScheduledExecutorService scheduled_pool, File file, boolean need_chunk_zero)
 			throws IOException {
 		try (FileInputStream fis = new FileInputStream(file);
 				BufferedInputStream bis = new BufferedInputStream(fis)) {
-			int size = 0;
 
 			chunk_no = read_loop(buffer, chunk_no, thread_results, scheduled_pool, bis);
 
 			if (need_chunk_zero) {
-				byte[] empty = new byte[0];
-
-				Future<Boolean> result =
-						scheduled_pool.submit(
-								new Chunk(this.file_ID, chunk_no, empty, this.replication_degree, this.peer));
-				thread_results.add(result);
-				this.peer
-						.get_manager()
-						.get_degrees()
-						.put(chunk_no + "_" + this.file_ID, this.replication_degree);
-				chunk_no++;
+				make_chunk(chunk_no, thread_results, scheduled_pool);
 			}
 		}
 	}
 
 	/**
-	 *
-	 * @param buffer
-	 * @param chunk_no
-	 * @param thread_results
-	 * @param scheduled_pool
-	 * @param bis
-	 * @return
-	 * @throws IOException
+	 * Cria o chunk
+	 * @param chunk_no numero do chunk
+	 * @param thread_results lista de resultados
+	 * @param scheduled_pool SchedulePool
+	 */
+	private void make_chunk(int chunk_no, List<Future<Boolean>> thread_results,
+			ScheduledExecutorService scheduled_pool) {
+		byte[] empty = new byte[0];
+
+		Future<Boolean> result =
+				scheduled_pool.submit(
+						new Chunk(this.file_ID, chunk_no, empty, this.replication_degree, this.peer));
+		thread_results.add(result);
+		this.peer
+				.get_manager()
+				.get_degrees()
+				.put(chunk_no + "_" + this.file_ID, this.replication_degree);
+		chunk_no++;
+	}
+
+	/**
+	 * loop de leitura
+	 * @param buffer buffer de entrada
+	 * @param chunk_no numero do chunk
+	 * @param thread_results lista dos resultados
+	 * @param scheduled_pool SchedulePool
+	 * @param bis buffer input stream
+	 * @return numero do chunk
+	 * @throws IOException excepção de entrada/saída
 	 */
 	private int read_loop(byte[] buffer, int chunk_no, List<Future<Boolean>> thread_results,
 			ScheduledExecutorService scheduled_pool, BufferedInputStream bis) throws IOException {

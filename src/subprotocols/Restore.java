@@ -29,6 +29,11 @@ public class Restore implements Runnable {
 	private int actual_chunk;
 	private HashMap<Integer, byte[]> file_chunks;
 
+	/**
+	 * construtor do restore
+	 * @param filename nome do ficheiro
+	 * @param peer peer
+	 */
 	public Restore(String filename, Peer peer) {
 		this.file_chunks = new HashMap<>();
 		this.filepath = Peer.PEERS_FOLDER + Peer.DISK_FOLDER + peer.get_ID() + "/" + Peer.FILES_FOLDER + filename;
@@ -36,17 +41,16 @@ public class Restore implements Runnable {
 		this.new_filepath = Peer.PEERS_FOLDER + Peer.DISK_FOLDER + this.peer.get_ID() + "/" + Peer.RESTORED_FOLDER + filename;
 	}
 
+	/**
+	 * run do Restore
+	 */
 	@Override
 	public void run() {
-		// Check if Peer can restore the file
-		File file = new File(this.filepath);
-		if(file.exists()) {
-			this.file_ID = new FileID(this.filepath).toString();
-		} else {
-			System.out.println("You can't restore a file that you didn't backup.");
+
+		if (!check_if_peer_can_restore()) {
 			return;
-		}		
-		
+		}
+
 		ScheduledExecutorService scheduledPool = Executors.newScheduledThreadPool(1);
 
 		boolean restored = false;
@@ -56,7 +60,6 @@ public class Restore implements Runnable {
 
 		while (restored == false) {
 
-			// After 3 attempts the restore protocol stops
 			if (attempts == 3) {
 				System.out.println("Restauro de ficheiro terminou sem sucesso");
 				return;
@@ -65,24 +68,13 @@ public class Restore implements Runnable {
 
 			Future<Boolean> future = scheduledPool.schedule(is_restored, time_task, TimeUnit.SECONDS);
 
-			boolean result = false;
+			boolean result = get_result(future);
 
-			try {
-				result = future.get();
-			} catch (InterruptedException e) {
-				System.out.println("Erro ao enviar mensagem de getchunk");
-			} catch (ExecutionException e) {
-				System.out.println("Erro ao enviar mensagem de getchunk");
-			}
-
-
-
-			// If the chunk restored has not yet arrived, the time interval increases 1 second
 			if (!result) {
 				time_task = time_task + 1;
 				attempts++;
 			} else {
-				// Check if it was the last chunk
+
 				byte[] chunk = this.peer.get_restored_chunks().get(this.actual_chunk + "_" + this.file_ID);
 				
 				String secret_key = "peer" + this.peer.get_ID();
@@ -106,8 +98,43 @@ public class Restore implements Runnable {
 		}
 	}
 
+	/**
+	 * verifica se já recebeu
+	 * @param future booleano de promessa de receber
+	 * @return se já recebeu
+	 */
+	private boolean get_result(Future<Boolean> future) {
+		boolean result = false;
+		try {
+			result = future.get();
+		} catch (InterruptedException e) {
+			System.out.println("Erro ao enviar mensagem de getchunk");
+		} catch (ExecutionException e) {
+			System.out.println("Erro ao enviar mensagem de getchunk");
+		}
+		return result;
+	}
+
+	/**
+	 * Verifica se o peer pode restaurar o ficheiro
+	 * @return verdadeiro ou falso
+	 */
+	private boolean check_if_peer_can_restore() {
+		File file = new File(this.filepath);
+		if(file.exists()) {
+			this.file_ID = new FileID(this.filepath).toString();
+		} else {
+			System.out.println("You can't restore a file that you didn't backup.");
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Envia uma vez a mensagem getchunk
+	 * @param attempts tentativas
+	 */
 	private void send_message_try(int attempts) {
-		// It only sends the getchunk message one time
 		if (attempts == 0) {
 			byte[] packet = make_get_chunk_message(this.file_ID, this.actual_chunk);
 
@@ -115,11 +142,14 @@ public class Restore implements Runnable {
 				this.peer.send_reply_to_peers(channel_type.MC, packet);
 				this.peer.get_wait_restored_chunks().add(this.actual_chunk + "_" + this.file_ID);
 			} catch (IOException e) {
-				System.out.println("Error sending getchunk message");
+				System.out.println("Erro ao enviar mensagem getchunk");
 			}
 		}
 	}
 
+	/**
+	 * Restaurar ficheiro
+	 */
 	private void restore_file() {
 		System.out.println("Restauro em: "+this.new_filepath);
 
@@ -141,7 +171,7 @@ public class Restore implements Runnable {
 	}
 
 	/**
-	 *
+	 * Verifica se restauro terminou
 	 */
 	Callable<Boolean> is_restored = () -> {
 		String hashmapKey = this.actual_chunk + "_" + this.file_ID;
@@ -155,10 +185,10 @@ public class Restore implements Runnable {
 	};
 
 	/**
-	 *
-	 * @param file_ID
-	 * @param chunk_no
-	 * @return
+	 * Cria a mensagem do chunk
+	 * @param file_ID identificador do ficheiro
+	 * @param chunk_no numero do chunk
+	 * @return mensagem a enviar
 	 */
 	private byte[] make_get_chunk_message(String file_ID, int chunk_no) {
 		String message = "GETCHUNK " + this.peer.get_protocol_version() + " " + this.peer.get_ID() + " " + file_ID
