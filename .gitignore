@@ -16,6 +16,22 @@ local.properties
 .classpath
 .project
 
+# program files
+Server1/
+Server2/
+Server3/
+
+#binaries
+.bin/
+
+# intelliJ
+.idea/
+
+# Compiled class file
+*.class
+
+
+
 # External tool builders
 .externalToolBuilders/
 
