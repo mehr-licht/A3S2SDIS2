@@ -89,10 +89,69 @@ Para esse efeito foram criados:
 
 #### concorrência
 
-#### encriptação
+Para resolver os problemas da concorrência tivemos de abordar cinco aspectos:
+
+* Como os peers estão à escuta de mensagens de outros peers em três diferentes canais (multicast, de dados e de restore), criamos threads de _listeners_ em cada canal para que uma tarefa num desses canais não impeça a recepção noutro.
+  
+  Concumitantemente, quando um canal recebe um pacote, é lançada uma thread para tratar desse pacote especifico.
+
+* Ao mesmo tempo é necessário garantir que simultaneamente consiga responder a pedidos do cliente.
+ 
+    Mais uma vez, é criada uma thread nova para tratar do pedido do cliente.
+
+* Para executar tarefas após um certo periodo de tempo recorremos à classe java.util.concurrent.ScheduledThreadPoolExecutor
+  
+* No que toca à concorrência no acesso à memória partilhada, usamos as classes
+    * java.util.concurrent.ConcurrentHashMap
+    * java.util.concurrent.CopyOnWriteArrayList
+    
+* Nas operações com a memória não volátil utilizamos métodos synchronized.
+ 
+
 
 #### segurança
 
+Nesta secção explicamos como tentamos garantir a autenticidade, confidencialidade e a integridade.
+
+A autenticidade de cada nó do sistema é assegurada através da autenticação SSL.
+
+A confidencialidade, ou seja, impedir que informação sensível chegue seja acessivel por quem não queremos e garantir que quem queremos a recebe, é afiançada pela encriptação usada.
+
+A integridade, isto é, o receptor ter garantia que os dados vieram do emissor e que os dados não foram alterados por terceiros durante o percurso, é também sustentada na encriptação.
+
+##### autenticação SSL
+
+Cada peer tem uma peerkey e cada server tem uma serverKey que são as suas senhas de autenticação.
+
+Do mesmo modo, cada peer e cada server possuêm uma trustStore onde guardam os certificados aceites.
+
+Com este sistema, oferecemos uma garantia de que o servidor só aceita informações de quem conhece.
+
+##### encriptação
+
+getInstance vs enableProtocols [TODO]
+
+Quando se inicia um backup há encriptação no InitiatorPeer com um achave só por si conhecida.
+
+A desencriptação acontece aquando do restore. A mensagem é decifrado novamente no InitiatorPeer.
+
+Deste modo garante-se a confidencialidade já que mais nenhum agente externo consegue decifrar os dados.
+
 #### tolerância a falhas
 
-#### escalabilidade
+A tolerância a falhas implica que o sistema sobrevive a uma falha de qualquer um dos seus nós em qualquer altura.
+
+Para garantir isso, os peers partilham a informação sobre os seus dados com o seu servidor (e estes entre si no caso de ser um sistema semi-centralizado):
+* Cada peer, de 30 em 30 segundos, envia ao seu 'servidor' um ficheiro com os seus metadados. Além disso, se houver vários 'servidores' eles partilham os metadados dos seus peers entre si.
+* Quando um peer se torna activo verifica se tem metadados. Se os tiver carrega-os. Se não os tiver pergunta ao seu 'servidor' se há metadados dele. Se houver, o 'servidor' envia-lhe o ficheiro e ele carrega-os.
+
+Deste modo, caso um peer e/ou o seu servidor forem abaixo, quando o peer se voltar a autenticar (a qualquer servidor, ver a escalabilidade), volta a ter toda a informação relativa aos seus dados. 
+
+
+#### escalabilidade e disponibilidade
+ 
+Para garantir que o sistema e a informação estão sempre disponíveis e devido à arquitectura semi-centralizada implementada, podemos ter mais que um master peer.
+
+Assim, se um  master peer for abaixo, os peers que estiverem registados consigo irão ligar-se a outro 'servidor' activo. Só se não houver 'servidores' onde se ligar é que um peer termina.
+
+Na autenticação de peers, estes ligam-se de forma aleatória a um 'servidor' que esteja activo. Havendo pelo menos um 'servidor' activo, sabe-se que um novo peer tem sempre a quem se ligar.
