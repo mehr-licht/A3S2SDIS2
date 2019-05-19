@@ -1,6 +1,7 @@
 package utils;
 
 import java.io.UnsupportedEncodingException;
+import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -9,6 +10,7 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 /** classe AES (Advanced Encryption Standard) */
@@ -84,24 +86,40 @@ public class AES {
   This adds an extra level of complexity to the encrypted data.
        */
 
-    /**
-     *
-     * @param message
-     * @param private_key
-     * @param decryptMode
-     * @return
-     * @throws NoSuchAlgorithmException
-     * @throws NoSuchPaddingException
-     * @throws InvalidKeyException
-     * @throws IllegalBlockSizeException
-     * @throws BadPaddingException
-     */
+  /**
+   * Cifra ou decifra a mensagem
+   *
+   * @param message mensagem a cifrar ou decifrar
+   * @param private_key chave privada
+   * @param decryptMode encriptar ou decifrar
+   * @return texto cifrado ou decifrado consoante o decryptMode passado
+   * @throws NoSuchAlgorithmException
+   * @throws NoSuchPaddingException
+   * @throws InvalidKeyException
+   * @throws IllegalBlockSizeException
+   * @throws BadPaddingException
+   */
   private byte[] doCipher(byte[] message, String private_key, int decryptMode)
       throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
-          IllegalBlockSizeException, BadPaddingException {
+          IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
     set_key(private_key);
     Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
-    cipher.init(decryptMode, this.private_key);
+    IvParameterSpec IV = new IvParameterSpec("1234567890123456".getBytes());
+    cipher.init(decryptMode, this.private_key, IV);
     return cipher.doFinal((message));
   }
 }
+// cipher.init(int opmode, Key key, AlgorithmParameterSpec param)
+/*
+DEcrypt
+final Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(encKey, "AES"), new IvParameterSpec(iv));
+byte[] plainText = cipher.doFinal(cipherText);
+ */
+
+/*
+Encrypt
+final Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding"); //actually uses PKCS#7
+cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(encKey, "AES"), new IvParameterSpec(iv));
+byte[] cipherText = cipher.doFinal(plainText);
+ */
