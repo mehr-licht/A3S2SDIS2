@@ -83,6 +83,19 @@ public class AES {
   With CBC mode encryption, each ciphertext block is dependent on all plaintext blocks processed up to that point.
   This adds an extra level of complexity to the encrypted data.
        */
+
+    /**
+     *
+     * @param message
+     * @param private_key
+     * @param decryptMode
+     * @return
+     * @throws NoSuchAlgorithmException
+     * @throws NoSuchPaddingException
+     * @throws InvalidKeyException
+     * @throws IllegalBlockSizeException
+     * @throws BadPaddingException
+     */
   private byte[] doCipher(byte[] message, String private_key, int decryptMode)
       throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
           IllegalBlockSizeException, BadPaddingException {
