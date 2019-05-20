@@ -133,6 +133,7 @@ public class Client {
   public static boolean usage(String[] args) {
     sub_protocol = args[1];
     rmi = args[0];
+    sub_protocol_args = new ArrayList<>();
 
     if (!(args.length >= 2 && args.length <= 4)) {
       System.out.println("Número errado de argumentos: "+args.length);
@@ -149,8 +150,10 @@ public class Client {
    * @return verdadeiro ou falso
    */
   private static boolean check_args(String[] args) {
+    //System.out.println("args"+args.length);
     switch (args.length) {
       case 4:
+       // System.out.println("args_entrou4");
         if (sub_protocol.equals("BACKUP")) {
           sub_protocol_args.add(args[2].trim());
           sub_protocol_args.add(args[3].trim());
@@ -158,9 +161,11 @@ public class Client {
         }
         break;
       case 2:
+      //  System.out.println("args_entrou2");
         if (sub_protocol.equals("STATE")) return true;
         break;
       case 3:
+       // System.out.println("args_entrou3");
         if (sub_protocol.equals("DELETE")
             || sub_protocol.equals("RESTORE")
             || sub_protocol.equals("RECLAIM")) {
@@ -169,6 +174,7 @@ public class Client {
         }
         break;
       default:
+       // System.out.println("args_entrouDefault");
         System.out.println("Invalid usage");
         return false;
 

@@ -151,15 +151,11 @@ public class Peer implements My_Interface_Remote {
    * @param rmi_address morada rmi
    * @param peer peer
    */
-  private static void start_RMI(String rmi_address, Remote peer)  {
+  private static void start_RMI(String rmi_address, Remote peer) {
     try {
-      My_Interface_Remote rmi = (My_Interface_Remote) UnicastRemoteObject.exportObject(peer, 0);//SDIS2
-/*
-      //Registry registry = LocateRegistry.getRegistry("localhost");//SDIS1
-      //My_Interface_Remote rmi = (My_Interface_Remote) registry.lookup(rmi_address);////SDIS1
-*/
-      Registry registry = LocateRegistry.getRegistry();//SDIS2
-      registry.rebind(rmi_address, rmi); // erro é aqui
+      My_Interface_Remote rmi = (My_Interface_Remote) UnicastRemoteObject.exportObject(peer, 0);
+      Registry registry = LocateRegistry.getRegistry();
+      registry.rebind(rmi_address, rmi);
     } catch (RemoteException e) {
       e.printStackTrace();
     }

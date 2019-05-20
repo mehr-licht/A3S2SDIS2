@@ -47,7 +47,10 @@ de peers ativos.
     * ```./create_peer.sh 1 <ServerIp>```
     * ```./create_peer.sh 2 <ServerIp>```
     * ```./create_peer.sh 3 <ServerIp>```
-    * ```./run.sh BACKUP 1 <fileName> <replication>```
+    
+    * fazer o de baixo ```./run.sh BACKUP 1 <fileName> <replication>```
+    *    ```java utils.Client peer1 BACKUP "../ExampleFiles/small.pdf" 2```
+    
     * Introduzir Ctrl + C no terminal do 'servidor' 1
     * ```./run.sh RESTORE 1 <fileName>```
     * ```./run.sh  DELETE 1 <fileName>```
