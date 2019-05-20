@@ -22,7 +22,7 @@ será sempre apagado ao executar o comando ```./compile.sh```.
 (num máximo de 3: tanto os IDs como os portos devem ser únicos e os portos devem situar-se entre 3000 e 3002.\
 Os Master Peers devem estar na mesma máquina.
 
-* criar peers com ```./create_peer <port_ID> <ServerIp>```. Abrirá uma nova _tab_ com o peer criado.
+* criar peers com ```./create_peer <port_ID> <Server_IP>```. Abrirá uma nova _tab_ com o peer criado.
   
 * pedir serviços de cliente com um dos seguintes comandos, no formato ```./run.sh SERVICE <peer_ID> <operand1> <operand2>```
     * BACKUP example: ```./run.sh BACKUP 2 "files/cenas.txt" 1```
@@ -44,16 +44,16 @@ de peers ativos.
     * ```./compile.sh​```
     * ```./create_server.sh 1 3000```
     * ```./create_server.sh 2 3001```
-    * ```./create_peer.sh 1 <ServerIp>```
-    * ```./create_peer.sh 2 <ServerIp>```
-    * ```./create_peer.sh 3 <ServerIp>```
+    * ```./create_peer.sh 1 <Server_IP>```
+    * ```./create_peer.sh 2 <Server_IP>```
+    * ```./create_peer.sh 3 <Server_IP>```
     * ```./run.sh BACKUP 1 <fileName> <replication>```
     * Introduzir Ctrl + C no terminal do 'servidor' 1
     * ```./run.sh RESTORE 1 <fileName>```
     * ```./run.sh  DELETE 1 <fileName>```
     * ```./run.sh RECLAIM 3 64```
-    * ```./run.sh 3 STATE```
-    * ```./create_peer.sh 4 <ServerIp>```
+    * ```./run.sh STATE 3```
+    * ```./create_peer.sh 4 <Server_IP>```
     * ```./run.sh BACKUP 1 <fileName> <replication>```
 
 
