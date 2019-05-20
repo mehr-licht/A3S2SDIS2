@@ -16,10 +16,10 @@ será sempre apagado ao executar o comando ```./compile.sh```.
 
 * compilar com ```./compile.sh​``` na raiz do projecto.
 
-* iniciar o serviço RMI com ```./rmi.sh```.
+* iniciar o serviço RMI com ```./rmi.sh``` e este ficará a correr numa nova tab.
 
-* criar _'servidores'_ com ```./create_server <server_ID> <port>```\
-(num máximo de 3: tanto os IDs como os portos devem ser únicos e os portos devem situar-se entre 3000 e 3002.\
+* criar _'servidores'_ com ```./create_server <server_ID> <port>```. Serão criados numa nova tab cada um.\
+(num máximo de 3: tanto os IDs como os portos devem ser únicos e os portos devem situar-se entre 3000 e 3002.)\
 Os Master Peers devem estar na mesma máquina.
 
 * criar peers com ```./create_peer <port_ID> <Server_IP>```. Abrirá uma nova _tab_ com o peer criado.
