@@ -129,7 +129,18 @@ Com este sistema, oferecemos uma garantia de que o servidor só aceita informaç
 
 ##### encriptação
 
-getInstance vs enableProtocols [TODO]
+A cifra é inicializada com uma chave AES de 256bit 
+com vector de inicialização especificado de modo aleatório
+com o gerador criptograficamente forte de números aleatórios
+ da classe SecureRandom.
+
+ 
+A transformação a aplicar ao input,
+além de incluir o algoritmo criptografico
+(AES), também usa o modo de feedback CBC (cipher block chaining)
+ e o esquema de preenchimento PKCS5PADDING que internamente é transformado em PKCS7
+para permitir o AES com mais de 8bit. 
+
 
 Quando se inicia um backup há encriptação no InitiatorPeer com um achave só por si conhecida.
 

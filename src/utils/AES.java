@@ -5,19 +5,33 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Arrays;
+import java.util.Base64;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 /** classe AES (Advanced Encryption Standard) */
 public class AES {
-
   private SecretKeySpec private_key;
   private byte[] key;
+
+
+  private static SecretKey key3;
+  private static byte[] IV = new byte[16];
+  //private static final byte[] AES_IV = "1234567890123456".getBytes();
+
+  private static final String TRANSFORMATION = "AES/CBC/PKCS5PADDING";
+    //A transformation is a string that describes the operation (or set of operations)
+    // to be performed on the given input, to produce some output.
+    // A transformation always includes the name of a cryptographic algorithm (e.g., AES),
+    // and may be followed by a feedback mode and padding scheme
 
   /** @param key */
   public void set_key(String key) {
@@ -25,6 +39,7 @@ public class AES {
     try {
       this.key = key.getBytes("UTF-8");
       sha = MessageDigest.getInstance("SHA-1");
+
       this.key = sha.digest(this.key);
       this.key = Arrays.copyOf(this.key, 16);
       private_key = new SecretKeySpec(this.key, "AES");
@@ -39,12 +54,12 @@ public class AES {
    * Cifra mensagem com chave privada
    *
    * @param message mensagem para cifrar
-   * @param private_key chave privada da cifra
+
    * @return
    */
-  public byte[] encrypt(byte[] message, String private_key) {
+  public byte[] encrypt(byte[] message, String key) {
     try {
-      return doCipher(message, private_key, Cipher.ENCRYPT_MODE);
+      return doCipher(message, Cipher.ENCRYPT_MODE,key);
     } catch (Exception e) {
       System.out.println("Erro ao cifrar: " + e.toString());
     }
@@ -55,12 +70,12 @@ public class AES {
    * Decifra mensagem com a chave privada
    *
    * @param message mensagem a decifrar
-   * @param private_key chave privada da cifra
+
    * @return
    */
-  public byte[] decrypt(byte[] message, String private_key) {
+  public byte[] decrypt(byte[] message, String key) {
     try {
-      return doCipher(message, private_key, Cipher.DECRYPT_MODE);
+      return doCipher(message, Cipher.DECRYPT_MODE, key);
     } catch (Exception e) {
       System.out.println("Erro ao decifrar: " + e.toString());
     }
@@ -90,7 +105,7 @@ public class AES {
    * Cifra ou decifra a mensagem
    *
    * @param message mensagem a cifrar ou decifrar
-   * @param private_key chave privada
+   * @param key chave privada
    * @param decryptMode encriptar ou decifrar
    * @return texto cifrado ou decifrado consoante o decryptMode passado
    * @throws NoSuchAlgorithmException
@@ -99,15 +114,41 @@ public class AES {
    * @throws IllegalBlockSizeException
    * @throws BadPaddingException
    */
-  private byte[] doCipher(byte[] message, String private_key, int decryptMode)
+  private byte[] doCipher(byte[] message, int decryptMode, String key)
       throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
-          IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
-    set_key(private_key);
-    Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
-    IvParameterSpec IV = new IvParameterSpec("1234567890123456".getBytes());
-    cipher.init(decryptMode, this.private_key, IV);
+          IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {//, String private_key,
+        set_key(key);
+
+   // createKey();
+    createIV();
+    Cipher cipher = Cipher.getInstance(TRANSFORMATION);
+      SecretKeySpec keySpec = new SecretKeySpec((this.private_key).getEncoded(), "AES");
+    IvParameterSpec aes_IV = new IvParameterSpec(IV);
+    cipher.init(decryptMode, keySpec, aes_IV);
     return cipher.doFinal((message));
   }
+
+  private void createIV() {
+    //byte[] IV = new byte[16];
+    SecureRandom random = new SecureRandom();
+    random.nextBytes(IV);
+    }
+
+    private void createKey() throws NoSuchAlgorithmException{
+        KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
+        keyGenerator.init(256);
+        key3 = keyGenerator.generateKey();
+    }
+
+    private void testStrings(){
+      // para testar
+     String plainText = "This is a plain text which need to be encrypted by Java AES 256 Algorithm in CBC Mode";
+        System.out.println("Original Text  : "+plainText);
+     byte[] cipherText = encrypt(plainText.getBytes(),new String(this.key));//,key3, IV);
+        System.out.println("Encrypted Text : "+Base64.getEncoder().encodeToString(cipherText));
+      String decryptedText = new String(decrypt(cipherText,new String(this.key)));// IV);
+        System.out.println("DeCrypted Text : "+ decryptedText);
+    }
 }
 // cipher.init(int opmode, Key key, AlgorithmParameterSpec param)
 /*
