@@ -32,7 +32,7 @@ import utils.My_Interface_Remote;
 import utils.Protocol_handler;
 
 /** classe Peer */
-public class Peer implements My_Interface_Remote {
+public class Peer implements My_Interface_Remote{
 
   /** portos de entrada no canais */
   public class PeerEndpoint {
@@ -523,12 +523,14 @@ public class Peer implements My_Interface_Remote {
   }
 
   /**
+   * Faz backup de ficheiro do peer
+   *
    * @param filename ficheiro para ser feito o backup
    * @param replication_degree
    * @throws RemoteException
    */
   @Override
-  public void backup(String filename, int replication_degree) {
+  public void backup(String filename, int replication_degree){
     System.out.println("[SERVER " + this.peer_ID + "] Starting backup protocol...");
     // try {
     new Thread(new subprotocols.Backup(filename, replication_degree, this)).start();
@@ -538,6 +540,8 @@ public class Peer implements My_Interface_Remote {
   }
 
   /**
+   * Apaga ficheiro
+   *
    * @param filename ficheiro a eliminar
    * @throws RemoteException
    */
@@ -548,6 +552,8 @@ public class Peer implements My_Interface_Remote {
   }
 
   /**
+   * Restaura ficheiro no peer
+   *
    * @param filename ficheiro a restaurar
    * @throws RemoteException
    */
@@ -558,7 +564,9 @@ public class Peer implements My_Interface_Remote {
   }
 
   /**
-   * @return
+   * Mostra informação acerca do estado do peer
+   *
+   * @return informação acerca do estado do peer
    * @throws RemoteException
    */
   @Override
@@ -569,6 +577,8 @@ public class Peer implements My_Interface_Remote {
   }
 
   /**
+   * Reclama espaço para o peer
+   *
    * @param space Espaço total que se quer (kbytes)
    * @throws RemoteException
    */

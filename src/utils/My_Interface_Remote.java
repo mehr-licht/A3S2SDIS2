@@ -10,9 +10,9 @@ public interface My_Interface_Remote extends Remote
      * Faz BackupUtil do ficheiro
      * @param filename ficheiro para ser feito o backup
      * @param replication_degree
-     * @throws RemoteException Excepção de ligação remota
+     * @throws RemoteException Excepção de ligação remota\
      */
-    void backup(String filename, int replication_degree) throws RemoteException;
+     void backup(String filename, int replication_degree) throws RemoteException;
 
     /**
      * Elimina o ficheiro
