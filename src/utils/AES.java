@@ -27,6 +27,7 @@ public class AES {
   private static byte[] IV = new byte[16];
   //private static final byte[] AES_IV = "1234567890123456".getBytes();
 
+
   private static final String TRANSFORMATION = "AES/CBC/PKCS5PADDING";
     //A transformation is a string that describes the operation (or set of operations)
     // to be performed on the given input, to produce some output.
@@ -35,7 +36,7 @@ public class AES {
 
   /** @param key */
   public void set_key(String key) {
-    MessageDigest sha = null;
+    MessageDigest sha ;
     try {
       this.key = key.getBytes("UTF-8");
       sha = MessageDigest.getInstance("SHA-1");
@@ -75,7 +76,7 @@ public class AES {
    */
   public byte[] decrypt(byte[] message, String key) {
     try {
-      return doCipher(message, Cipher.DECRYPT_MODE, key);
+      return new String (doCipher(message, Cipher.DECRYPT_MODE, key), "UTF-8").getBytes();
     } catch (Exception e) {
       System.out.println("Erro ao decifrar: " + e.toString());
     }
@@ -140,7 +141,7 @@ public class AES {
         key3 = keyGenerator.generateKey();
     }
 
-    private void testStrings(){
+     void testStrings(){
       // para testar
      String plainText = "This is a plain text which need to be encrypted by Java AES 256 Algorithm in CBC Mode";
         System.out.println("Original Text  : "+plainText);
@@ -163,4 +164,13 @@ Encrypt
 final Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding"); //actually uses PKCS#7
 cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(encKey, "AES"), new IvParameterSpec(iv));
 byte[] cipherText = cipher.doFinal(plainText);
+ */
+
+
+/*
+String[]  defaultSuite={"TLS_RSA_WITH_AES_128_CBC_SHA"};
+//public abstract void setEnabledCipherSuites(String[] suites)
+socket.setEnabledCipherSuites(defaultSuite);
+//antes do handshake
+//https://stackoverflow.com/questions/13943351/how-to-specify-the-ciphersuite-to-be-used-in-ssl-session
  */
