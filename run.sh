@@ -63,16 +63,16 @@ fi
 #STATE
 #run the TestApp: "sh [BACKUP|RESTORE|RECLAIM|DELETE|STATE].sh"
 if [ $service = "DELETE" ] || [ $service = "RESTORE" ]; then
- 	java -classpath bin peer.Peer $peer $service $file
+ 	java -classpath bin utils.Client peer$peer $service $file
 fi
 if [ $service = "RECLAIM" ]; then
-	java -classpath bin peer.Peer $peer RECLAIM $space
+	java -classpath bin utils.Client peer$peer RECLAIM $space
 fi
 if [ $service = "BACKUP" ]; then
-	java -classpath bin peer.Peer $peer BACKUP $file $replic
+	java -classpath bin utils.Client peer$peer BACKUP $file $replic
 fi
 if [ $service = "STATE" ]; then
-	java -classpath bin peer.Peer $peer STATE
+	java -classpath bin utils.Client peer$peer STATE
 fi
 
 
