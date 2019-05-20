@@ -25,7 +25,7 @@ public class Client {
 
     try {
       Registry registry = LocateRegistry.getRegistry("localhost");
-      My_Remote_Interface rmi = (My_Remote_Interface) registry.lookup(Client.rmi);
+      My_Interface_Remote rmi = (My_Interface_Remote) registry.lookup(Client.rmi);
       switch (sub_protocol) {
         case "BACKUP":
           case_is_backup(rmi);
@@ -62,7 +62,7 @@ public class Client {
    * Lança o sub-protocolo de BACKUP
    * @param rmi interface rmi
    */
-  private static void case_is_backup(My_Remote_Interface rmi)  {
+  private static void case_is_backup(My_Interface_Remote rmi)  {
     try {
       rmi.backup(sub_protocol_args.get(0), Integer.parseInt(sub_protocol_args.get(1)));
     } catch (Exception e) {
@@ -75,7 +75,7 @@ public class Client {
    * Lança o sub-protocolo de DELETE
    * @param rmi interface rmi
    */
-  private static void case_is_delete(My_Remote_Interface rmi) {
+  private static void case_is_delete(My_Interface_Remote rmi) {
     try {
       rmi.delete(sub_protocol_args.get(0));
     } catch (Exception e) {
@@ -88,7 +88,7 @@ public class Client {
    * Lança o sub-protocolo de RECLAIM
    * @param rmi interface rmi
    */
-  private static void case_is_reclaim(My_Remote_Interface rmi) {
+  private static void case_is_reclaim(My_Interface_Remote rmi) {
     try {
       rmi.reclaim(Integer.parseInt(sub_protocol_args.get(0)));
     } catch (Exception e) {
@@ -101,7 +101,7 @@ public class Client {
    * Lança o sub-protocolo de RESTORE
    * @param rmi interface rmi
    */
-  private static void case_is_restore(My_Remote_Interface rmi) {
+  private static void case_is_restore(My_Interface_Remote rmi) {
     try {
       rmi.restore(sub_protocol_args.get(0));
     } catch (Exception e) {
@@ -114,7 +114,7 @@ public class Client {
    * Lança o sub-protocolo de STATE
    * @param rmi interface rmi
    */
-  private static void case_is_state(My_Remote_Interface rmi) {
+  private static void case_is_state(My_Interface_Remote rmi) {
     try {
       System.out.println("State of Peer " + Client.rmi + ":");
       System.out.println(rmi.state());

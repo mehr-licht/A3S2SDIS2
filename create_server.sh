@@ -11,4 +11,6 @@ if [[ "$2" -gt 3002  || "$2" -lt 3000 ]]; then
   exit 1
 fi
 
-cd bin && java server.Server "$1" "$2"
+gnome-terminal --tab --title="Server $1" -- bash -c "cd bin && java server.Server  "$1" "$2""
+echo "Server $1 created in another tab"
+

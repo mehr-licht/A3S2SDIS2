@@ -3,7 +3,7 @@ package utils;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-public interface My_Remote_Interface extends Remote
+public interface My_Interface_Remote extends Remote
 {
 
     /**

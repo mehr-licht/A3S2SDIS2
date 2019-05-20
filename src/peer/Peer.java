@@ -7,6 +7,7 @@ import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -22,16 +23,16 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
-import utils.BackupUtil;
-import utils.Manager;
 import subprotocols.Reclaim;
 import subprotocols.Restore;
 import subprotocols.State;
-import utils.My_Remote_Interface;
+import utils.BackupUtil;
+import utils.Manager;
+import utils.My_Interface_Remote;
 import utils.Protocol_handler;
 
 /** classe Peer */
-public class Peer implements My_Remote_Interface {
+public class Peer implements My_Interface_Remote {
 
   /** portos de entrada no canais */
   public class PeerEndpoint {
@@ -48,24 +49,16 @@ public class Peer implements My_Remote_Interface {
     MDR
   }
 
-  /**
-   * Guarda os chunks restaurados recebidos - <ChunkNo_FileID><File Bytes>
-   */
+  /** Guarda os chunks restaurados recebidos - <ChunkNo_FileID><File Bytes> */
   private ConcurrentHashMap<String, byte[]> restored_chunks;
 
-  /**
-   * Guarda os chunks que está à espera - <ChunkNo_FileID>
-   */
+  /** Guarda os chunks que está à espera - <ChunkNo_FileID> */
   private CopyOnWriteArrayList<String> wait_restored_chunks;
 
-  /**
-   *  Guarda as mensagens de chunks recebidos - <ChunkNo_FileID>
-   */
+  /** Guarda as mensagens de chunks recebidos - <ChunkNo_FileID> */
   private CopyOnWriteArrayList<String> received_chunk_messages;
 
-  /**
-   * Guarda as mensagens PUTCHUNK recebidas - <ChunkNo_FileID>
-   */
+  /** Guarda as mensagens PUTCHUNK recebidas - <ChunkNo_FileID> */
   private CopyOnWriteArrayList<String> received_put_chunk_messages;
 
   private Manager data_manager;
@@ -73,9 +66,7 @@ public class Peer implements My_Remote_Interface {
   private volatile ArrayList<PeerEndpoint> endpoints;
   private volatile boolean collected_all_peers;
 
-  /**
-   * 0 não existe, 1 existe, -1 à espera de resposta
-   */
+  /** 0 não existe, 1 existe, -1 à espera de resposta */
   private volatile int metadata_server;
 
   public static final String PEERS_FOLDER = "Peers/";
@@ -108,8 +99,7 @@ public class Peer implements My_Remote_Interface {
    * @throws InterruptedException Excepção de interrupção
    * @throws ExecutionException Excepção de execução
    */
-  public Peer(String protocol, int id, String host_IP)
-      throws IOException {
+  public Peer(String protocol, int id, String host_IP) throws IOException {
     this.protocol_version = protocol;
     this.peer_ID = id;
     this.host_IP = host_IP;
@@ -144,14 +134,13 @@ public class Peer implements My_Remote_Interface {
     new Thread(new BackupUtil(this)).start();
   }
 
-  public static void main(String[] args)
-      throws IOException, InterruptedException, ExecutionException {
+  public static void main(String[] args) throws IOException, NotBoundException {
     if (!valid_input(args)) usage(args);
 
-    int server_ID = Integer.valueOf(args[0]);
-    String host_IP = args[1];
-    String rmi_address = "peer" + server_ID;
-    Peer peer = new Peer("1.0", server_ID, host_IP);
+    int peer_ID = Integer.valueOf(args[0]);
+    String server_IP = args[1];
+    String rmi_address = "peer" + peer_ID;
+    Peer peer = new Peer("1.0", peer_ID, server_IP);
 
     start_RMI(rmi_address, peer);
   }
@@ -162,11 +151,15 @@ public class Peer implements My_Remote_Interface {
    * @param rmi_address morada rmi
    * @param peer peer
    */
-  private static void start_RMI(String rmi_address, Remote peer) {
+  private static void start_RMI(String rmi_address, Remote peer)  {
     try {
-      My_Remote_Interface rmi = (My_Remote_Interface) UnicastRemoteObject.exportObject(peer, 0);
-      Registry registry = LocateRegistry.getRegistry();
-      registry.rebind(rmi_address, rmi);
+      My_Interface_Remote rmi = (My_Interface_Remote) UnicastRemoteObject.exportObject(peer, 0);//SDIS2
+/*
+      //Registry registry = LocateRegistry.getRegistry("localhost");//SDIS1
+      //My_Interface_Remote rmi = (My_Interface_Remote) registry.lookup(rmi_address);////SDIS1
+*/
+      Registry registry = LocateRegistry.getRegistry();//SDIS2
+      registry.rebind(rmi_address, rmi); // erro é aqui
     } catch (RemoteException e) {
       e.printStackTrace();
     }
@@ -174,7 +167,7 @@ public class Peer implements My_Remote_Interface {
 
   /** Imprime o usage correcto */
   public static void usage(String[] args) {
-    System.out.println("Número errado de argumentos: "+args.length);
+    System.out.println("Número errado de argumentos: " + args.length);
     System.exit(1);
   }
 
@@ -185,13 +178,14 @@ public class Peer implements My_Remote_Interface {
    * @return verdadeiro ou falso
    */
   public static boolean valid_input(String[] args) {
-    //if (args.length != 2) return false;
+    // if (args.length != 2) return false;
     return true;
   }
 
   /**
    * prepara os directorios
-   *  @param peer_disk disco do peer
+   *
+   * @param peer_disk disco do peer
    * @param backup_files ficheiros de backup
    * @param chunks_files ficheiros dos chunks
    * @param restored_file ficheiro restaurado
@@ -292,7 +286,7 @@ public class Peer implements My_Remote_Interface {
   }
 
   /**
-   * Conecata-se a um servidor
+   * Conecta-se a um servidor
    *
    * @param sf SSL socket factory
    * @param n numero random entre 0 e 2
@@ -348,9 +342,9 @@ public class Peer implements My_Remote_Interface {
     server_channel.send_message(msg);
   }
 
-
   /**
    * Envia a mensagem de DELETE para o canal multicast
+   *
    * @param filename nome do ficheiro
    */
   public void send_delete_request(String filename) {
@@ -408,11 +402,13 @@ public class Peer implements My_Remote_Interface {
 
   /**
    * Envia resposta para os peers
+   *
    * @param type tipo de canal
    * @param packet pacote a enviar
    * @throws IOException Excepção de entrada/saída
    */
-  public synchronized void send_reply_to_peers(channel_type type, byte[] packet) throws IOException {
+  public synchronized void send_reply_to_peers(channel_type type, byte[] packet)
+      throws IOException {
     this.collected_all_peers = false;
     this.endpoints = new ArrayList<>();
 
@@ -425,6 +421,7 @@ public class Peer implements My_Remote_Interface {
 
   /**
    * Percorre os endpoints para enviar
+   *
    * @param type tipo de canal
    * @param packet pacote a enviar
    * @throws IOException Excepção de entrada/saída
@@ -456,7 +453,7 @@ public class Peer implements My_Remote_Interface {
   }
 
   /**
-   *  @param host
+   * @param host
    * @param id
    * @param MC_port
    * @param MDB_port
@@ -474,90 +471,57 @@ public class Peer implements My_Remote_Interface {
     endpoints.add(peer);
   }
 
-  /**
-   *
-   * @return
-   */
+  /** @return */
   public String get_peer_state() {
     return new State(this).get_state();
   }
 
-   /**
-   *
-    * @param collected_all_peers
-    */
+  /** @param collected_all_peers */
   public void set_collected_peers(boolean collected_all_peers) {
     this.collected_all_peers = collected_all_peers;
   }
 
-  /**
-   *
-   * @param response
-   */
+  /** @param response */
   public void set_metadata_response(int response) {
     this.metadata_server = response;
   }
 
-  /**
-   *
-   * @return
-   */
+  /** @return */
   public PeerServerListener get_server_channel() {
     return server_channel;
   }
 
-  /**
-   *
-   * @return
-   */
+  /** @return */
   public String get_protocol_version() {
     return protocol_version;
   }
 
-  /**
-   *
-   * @return
-   */
+  /** @return */
   public int get_ID() {
     return peer_ID;
   }
 
-  /**
-   *
-   * @return
-   */
+  /** @return */
   public Manager get_manager() {
     return data_manager;
   }
 
-  /**
-   *
-   * @return
-   */
+  /** @return */
   public ConcurrentHashMap<String, byte[]> get_restored_chunks() {
     return restored_chunks;
   }
 
-  /**
-   *
-   * @return
-   */
+  /** @return */
   public CopyOnWriteArrayList<String> get_wait_restored_chunks() {
     return wait_restored_chunks;
   }
 
-  /**
-   *
-   * @return
-   */
+  /** @return */
   public CopyOnWriteArrayList<String> get_received_chunk_messages() {
     return received_chunk_messages;
   }
 
-  /**
-   *
-   * @return
-   */
+  /** @return */
   public CopyOnWriteArrayList<String> get_received_put_chunk_messages() {
     return received_put_chunk_messages;
   }
@@ -570,8 +534,8 @@ public class Peer implements My_Remote_Interface {
   @Override
   public void backup(String filename, int replication_degree) {
     System.out.println("[SERVER " + this.peer_ID + "] Starting backup protocol...");
-    //try {
-      new Thread(new subprotocols.Backup(filename, replication_degree, this)).start();
+    // try {
+    new Thread(new subprotocols.Backup(filename, replication_degree, this)).start();
     /*}/* catch (IOException e) {
       e.printStackTrace();
     }*/
@@ -582,7 +546,7 @@ public class Peer implements My_Remote_Interface {
    * @throws RemoteException
    */
   @Override
-  public void delete(String filename) {//throws RemoteException
+  public void delete(String filename) { // throws RemoteException
     System.out.println("[SERVER " + this.peer_ID + "] Starting delete protocol...");
     send_delete_request(filename);
   }
@@ -592,7 +556,7 @@ public class Peer implements My_Remote_Interface {
    * @throws RemoteException
    */
   @Override
-  public void restore(String filename) {//throws RemoteException
+  public void restore(String filename) { // throws RemoteException
     System.out.println("[SERVER " + this.peer_ID + "] Starting restore protocol...");
     new Thread(new Restore(filename, this)).start();
   }
@@ -602,7 +566,7 @@ public class Peer implements My_Remote_Interface {
    * @throws RemoteException
    */
   @Override
-  public String state() {//throws RemoteException
+  public String state() { // throws RemoteException
     System.out.println("[SERVER " + this.peer_ID + "] Starting state feature...");
     System.out.println("State returned.");
     return this.get_peer_state();
@@ -613,7 +577,7 @@ public class Peer implements My_Remote_Interface {
    * @throws RemoteException
    */
   @Override
-  public void reclaim(int space)  {//throws RemoteException
+  public void reclaim(int space) { // throws RemoteException
     System.out.println("[SERVER " + this.peer_ID + "] Starting reclaim protocol...");
     System.out.println("Disk used: " + this.get_manager().get_space_used());
     new Thread(new Reclaim(space, this)).start();

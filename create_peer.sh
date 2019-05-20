@@ -7,3 +7,4 @@ if [ "$#" -ne 2 ]; then
 fi
 
   gnome-terminal --tab --title="Peer $1" -- bash -c "cd bin && java peer.Peer  "$1" "$2""
+echo "Peer $1 created in another tab"
