@@ -109,7 +109,7 @@ public class Peer implements My_Remote_Interface {
    * @throws ExecutionException Excepção de execução
    */
   public Peer(String protocol, int id, String host_IP)
-      throws IOException, InterruptedException, ExecutionException {
+      throws IOException {
     this.protocol_version = protocol;
     this.peer_ID = id;
     this.host_IP = host_IP;
@@ -146,7 +146,7 @@ public class Peer implements My_Remote_Interface {
 
   public static void main(String[] args)
       throws IOException, InterruptedException, ExecutionException {
-    if (!valid_input(args)) usage();
+    if (!valid_input(args)) usage(args);
 
     int server_ID = Integer.valueOf(args[0]);
     String host_IP = args[1];
@@ -173,8 +173,8 @@ public class Peer implements My_Remote_Interface {
   }
 
   /** Imprime o usage correcto */
-  public static void usage() {
-    System.out.println("Numero de argumentos errado.");
+  public static void usage(String[] args) {
+    System.out.println("Número errado de argumentos: "+args.length);
     System.exit(1);
   }
 
@@ -185,7 +185,7 @@ public class Peer implements My_Remote_Interface {
    * @return verdadeiro ou falso
    */
   public static boolean valid_input(String[] args) {
-    if (args.length != 2) return false;
+    //if (args.length != 2) return false;
     return true;
   }
 

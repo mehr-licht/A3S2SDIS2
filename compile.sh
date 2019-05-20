@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 rm -r bin
 mkdir -p bin
 mkdir -p bin/my_peers

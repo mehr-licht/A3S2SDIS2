@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #$1 peer_ID
 #$2 server_ip
 if [ "$#" -ne 2 ]; then

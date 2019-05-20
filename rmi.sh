@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
-cd bin && rmiregistry 
-#cd bin && java rmi.RMI
+#cd bin && rmiregistry 
+cd bin && java utils.RMI

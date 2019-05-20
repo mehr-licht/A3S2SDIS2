@@ -41,7 +41,7 @@ public class AES {
       sha = MessageDigest.getInstance("SHA-1");
 
       this.key = sha.digest(this.key);
-      this.key = Arrays.copyOf(this.key, 16);
+      this.key = Arrays.copyOf(this.key, 256);//era 16
       private_key = new SecretKeySpec(this.key, "AES");
     } catch (NoSuchAlgorithmException e) {
       e.printStackTrace();

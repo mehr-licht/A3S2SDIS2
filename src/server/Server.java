@@ -2,8 +2,10 @@ package server;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -32,7 +34,7 @@ public class Server {
    *
    * @param args argumentos passados na linha de comandos
    */
-  public static void main(String args[]) {
+  public static void main(String args[]) throws UnknownHostException{
     if (!usage(args)) System.exit(-1);
 
     int server_ID = Integer.valueOf(args[0]);
@@ -68,7 +70,7 @@ public class Server {
    * @param id identificador do servidor
    * @param port porto do servidor
    */
-  public Server(int id, int port) {
+  public Server(int id, int port) throws UnknownHostException{
     server_ID = id;
     this.server_port = port;
     make_directory(Server.SERVER_FOLDER + server_ID);
@@ -83,6 +85,9 @@ public class Server {
 
     new Thread(new ServerChannel(socket)).start();
 
+    InetAddress IP=InetAddress.getLocalHost();
+    System.out.println("Server criado com o IP:porto <"+IP.getHostAddress()+":"+this.server_port+">" );
+    System.setProperty("java.rmi.server.hostname","IP.getHostAddress()");
     connect_to_other_servers();
   }
 

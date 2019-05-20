@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #$1 serverID
 #$2 server_port
 if [ "$#" -ne 2 ]; then

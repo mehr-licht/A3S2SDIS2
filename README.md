@@ -42,18 +42,18 @@ de peers ativos.
 * exemplo:
     * ```./rmi.sh```
     * ```./compile.sh​```
-    * ```./create_server 1 3000```
-    * ```./create_server 2 3001```
-    * ```./create_peer 1 <ServerIp>```
-    * ```./create_peer 2 <ServerIp>```
-    * ```./create_peer 3 <ServerIp>```
+    * ```./create_server.sh 1 3000```
+    * ```./create_server.sh 2 3001```
+    * ```./create_peer.sh 1 <ServerIp>```
+    * ```./create_peer.sh 2 <ServerIp>```
+    * ```./create_peer.sh 3 <ServerIp>```
     * ```./run.sh BACKUP 1 <fileName> <replication>```
     * Introduzir Ctrl + C no terminal do 'servidor' 1
     * ```./run.sh RESTORE 1 <fileName>```
     * ```./run.sh  DELETE 1 <fileName>```
     * ```./run.sh RECLAIM 3 64```
     * ```./run.sh 3 STATE```
-    * ```./create_peer 4 <ServerIp>```
+    * ```./create_peer.sh 4 <ServerIp>```
     * ```./run.sh BACKUP 1 <fileName> <replication>```
 
 
