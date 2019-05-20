@@ -40,8 +40,8 @@ de peers ativos.
 
 
 * exemplo:
-    * ```./rmi.sh```
     * ```./compile.sh​```
+    * ```./rmi.sh```
     * ```./create_server.sh 1 3000```
     * ```./create_server.sh 2 3001```
     * ```./create_peer.sh 1 <Server_IP>```

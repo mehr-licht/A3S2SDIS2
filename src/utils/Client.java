@@ -21,10 +21,10 @@ public class Client {
    * @param args argumentos passados na linha de comandos
    */
   public static void main(String args[]) {
-    if (!usage(args)) return;
+   if (!usage(args)) return;
 
     try {
-      Registry registry = LocateRegistry.getRegistry("localhost");
+      Registry registry = LocateRegistry.getRegistry();
       My_Interface_Remote rmi = (My_Interface_Remote) registry.lookup(Client.rmi);
       switch (sub_protocol) {
         case "BACKUP":
