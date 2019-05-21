@@ -1,5 +1,7 @@
 package utils;
 
+import static javax.crypto.Cipher.ENCRYPT_MODE;
+
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -60,11 +62,23 @@ public class AES {
    */
   public byte[] encrypt(byte[] message, String key) {
     try {
-      return doCipher(message, Cipher.ENCRYPT_MODE,key);
+      return doCipher(addIVtoMsg(message), ENCRYPT_MODE,key);
     } catch (Exception e) {
       System.out.println("Erro ao cifrar: " + e.toString());
     }
     return null;
+  }
+
+  private byte[] addIVtoMsg(byte[] msg) {
+    return ((new String (IV))+( new String (msg))).getBytes();
+  }
+
+  private byte[] extractIVfromMsg(byte[] msg){
+    return ((new String (msg)).substring(16)).getBytes();
+  }
+
+  private byte[] getIVfromMsg(byte[] msg){
+    return ((new String (msg)).substring(0,15)).getBytes();
   }
 
   /**
@@ -76,7 +90,7 @@ public class AES {
    */
   public byte[] decrypt(byte[] message, String key) {
     try {
-      return new String (doCipher(message, Cipher.DECRYPT_MODE, key), "UTF-8").getBytes();
+      return new String (doCipher(extractIVfromMsg(message), Cipher.DECRYPT_MODE, key), "UTF-8").getBytes();
     } catch (Exception e) {
       System.out.println("Erro ao decifrar: " + e.toString());
     }
@@ -118,10 +132,16 @@ public class AES {
   private byte[] doCipher(byte[] message, int decryptMode, String key)
       throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
           IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {//, String private_key,
+
         set_key(key);
 
    // createKey();
-    createIV();
+    if(decryptMode==ENCRYPT_MODE){
+      createIV();
+    }else{
+      IV=getIVfromMsg(message);
+    }
+
     Cipher cipher = Cipher.getInstance(TRANSFORMATION);
       SecretKeySpec keySpec = new SecretKeySpec((this.private_key).getEncoded(), "AES");
     IvParameterSpec aes_IV = new IvParameterSpec(IV);
