@@ -93,6 +93,7 @@ public class Backup implements Runnable {
 
     this.peer.get_manager().get_files_ids().put(this.filename, this.file_ID);
     this.peer.get_manager().get_backup_state().put(this.file_ID, false);
+    //this.peer.server_connection();//AQUI socket= e no outro lado devolve socket // depois socket.setEnabled e envia para metodos filhos até mensagem
 
     File file = new File(this.filepath);
 
@@ -117,12 +118,11 @@ public class Backup implements Runnable {
 	 * @param backup_done se backup foi feito
 	 */
 	private void print_backup_done(DateFormat format, boolean backup_done) {
+		Date date2 = new Date();
 		if (backup_done) {
-			Date date2 = new Date();
 			System.out.println("BackupUtil completed. " + format.format(date2));
 			this.peer.get_manager().get_backup_state().replace(file_ID, true);
 		} else {
-			Date date2 = new Date();
 			System.out.println("BackupUtil was not completed. " + format.format(date2));
 		}
 	}
@@ -192,6 +192,8 @@ public class Backup implements Runnable {
 			String secret_key = "peer" + this.peer.get_ID();
 			AES AES = new AES();
 			byte[] content_encrypted = AES.encrypt(content, secret_key);
+
+
 
 			Future<Boolean> result =
 					scheduled_pool.submit(

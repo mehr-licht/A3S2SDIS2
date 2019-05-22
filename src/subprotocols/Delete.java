@@ -14,7 +14,7 @@ public class Delete implements Runnable {
 	private Peer peer;
 
 	/**
-	 * construtos do subprotocolo delete
+	 * construtor do subprotocolo delete
 	 * @param file ficheiro
 	 * @param peer peer
 	 */
@@ -29,11 +29,11 @@ public class Delete implements Runnable {
 	@Override
 	public void run() {
 		File[] chunks = search_chunks(this.file_ID);
-		
+
 		if(chunks != null) {
 			delete_chunks(chunks);
 		}
-		
+
 		this.peer.get_manager().save_metadata();
 	}
 

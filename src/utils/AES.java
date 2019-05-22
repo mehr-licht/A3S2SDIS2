@@ -28,6 +28,7 @@ public class AES {
   private static byte[] IV = new byte[16];
   private static final byte[] AES_IV = "1234567890123456".getBytes();
 
+  private static final String ECB_TRANSFORMATION ="AES/ECB/PKCS5PADDING";
   private static final String TRANSFORMATION = "AES/CBC/PKCS5PADDING";
   // A transformation is a string that describes the operation (or set of operations)
   // to be performed on the given input, to produce some output.
@@ -248,7 +249,7 @@ ECB isn't a good choice of modes to use because it isn't very secure. CBC is a m
   private byte[] doCipher(byte[] message, String private_key, int decryptMode)
       throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
     set_key(private_key);
-    Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5PADDING");
+    Cipher cipher = Cipher.getInstance(ECB_TRANSFORMATION);
     cipher.init(decryptMode, this.private_key);
     return cipher.doFinal((message));
   }
@@ -280,4 +281,19 @@ socket.setEnabledCipherSuites(defaultSuite);
 
 //[TODO]alterar relatório ENCRYPT
 //[TODO]alterar estrutura files
+//[TODO]alterar portos de 3000 para outro numero qq -> ver google usual user ports
+
+//[TODO]rever aquilo no Client e no Peer getRegistry
+
 //[TODO]ver porque só relica 1
+//[TODO]ver porque só restaura 1  - problemas no Synchronized (peer.Peer ln 436)
+//[TODO]DELETE - é suposto só apagar os chunks que estão distribuidos?
+
+
+//BACKUP - probs na replic (se digo 2 com 3 peers, ele replica 1...)  (se digo 3 com 3 peers, ele replica 1...)
+//diz que Backup not completed => no wait_backup_result(...) -> meter um while que não sai enquanto !backup_done
+
+//RESTORE - probls no segundo? - problemas no Synchronized (peer.Peer ln 436)
+//STATE OK
+//RECLAIM OK
+//DELETE só apaga os chunks que estão distribuidos...
