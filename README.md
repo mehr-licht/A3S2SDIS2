@@ -12,24 +12,24 @@
 
 Ao efetuar um pedido de backup não esquecer que a localização do ficheiro tem
 que ser a pasta “​ bin/Peers/PeerDisk1/MyFiles​ ” neste caso o IniciatorPeer é o 1, este
-será sempre apagado ao executar o comando ```./compile.sh```.
+será sempre apagado ao executar o comando ```sh compile.sh```.
 
-* compilar com ```./compile.sh​``` na raiz do projecto.
+* compilar com ```sh compile.sh​``` na raiz do projecto.
 
-* iniciar o serviço RMI com ```./rmi.sh``` e este ficará a correr numa nova tab.
+* iniciar o serviço RMI com ```sh rmi.sh``` e este ficará a correr numa nova tab.
 
-* criar _'servidores'_ com ```./create_server <server_ID> <port>```. Serão criados numa nova tab cada um.\
+* criar _'servidores'_ com ```sh create_server <server_ID> <port>```. Serão criados numa nova tab cada um.\
 (num máximo de 3: tanto os IDs como os portos devem ser únicos e os portos devem situar-se entre 3000 e 3002.)\
 Os Master Peers devem estar na mesma máquina.
 
-* criar peers com ```./create_peer <port_ID> <Server_IP>```. Abrirá uma nova _tab_ com o peer criado.
+* criar peers com ```sh create_peer <port_ID> <Server_IP>```. Abrirá uma nova _tab_ com o peer criado.
   
-* pedir serviços de cliente com um dos seguintes comandos, no formato ```./run.sh SERVICE <peer_ID> <operand1> <operand2>```
-    * BACKUP example: ```./run.sh BACKUP 2 "files/cenas.txt" 1```
-    * DELETE example: ```./run.sh DELETE 2 "files/cenas.txt"```
-    * RESTORE example: ```./run.sh RESTORE 2 "files/cenas.txt"```
-    * RECLAIM example: ```./run.sh RECLAIM 2 9```
-    * STATE example: ```./run.sh STATE 2```
+* pedir serviços de cliente com um dos seguintes comandos, no formato ```sh run.sh SERVICE <peer_ID> <operand1> <operand2>```
+    * BACKUP example: ```sh run.sh BACKUP 2 "files/cenas.txt" 1```
+    * DELETE example: ```sh run.sh DELETE 2 "files/cenas.txt"```
+    * RESTORE example: ```sh run.sh RESTORE 2 "files/cenas.txt"```
+    * RECLAIM example: ```sh run.sh RECLAIM 2 9```
+    * STATE example: ```sh run.sh STATE 2```
 
 * IMPORTANTE, ​ é fundamental que a localização do ficheiro que irá utilizar para
 fazer backup seja “bin/Peers/PeerDisk<peerId>/MyFiles” ;
@@ -40,21 +40,21 @@ de peers ativos.
 
 
 * exemplo:
-    * ```./compile.sh​```
-    * ```./rmi.sh```
-    * ```./create_server.sh 1 3000```
-    * ```./create_server.sh 2 3001```
-    * ```./create_peer.sh 1 <Server_IP>```
-    * ```./create_peer.sh 2 <Server_IP>```
-    * ```./create_peer.sh 3 <Server_IP>```
-    * ```./run.sh BACKUP 1 <fileName> <replication>```
+    * ```sh compile.sh​```
+    * ```sh rmi.sh```
+    * ```sh create_server.sh 1 3000```
+    * ```sh create_server.sh 2 3001```
+    * ```sh create_peer.sh 1 <Server_IP>```
+    * ```sh create_peer.sh 2 <Server_IP>```
+    * ```sh create_peer.sh 3 <Server_IP>```
+    * ```sh run.sh BACKUP 1 <fileName> <replication>```
     * Introduzir Ctrl + C no terminal do 'servidor' 1
-    * ```./run.sh RESTORE 1 <fileName>```
-    * ```./run.sh  DELETE 1 <fileName>```
-    * ```./run.sh RECLAIM 3 64```
-    * ```./run.sh STATE 3```
-    * ```./create_peer.sh 4 <Server_IP>```
-    * ```./run.sh BACKUP 1 <fileName> <replication>```
+    * ```sh run.sh RESTORE 1 <fileName>```
+    * ```sh run.sh  DELETE 1 <fileName>```
+    * ```sh run.sh RECLAIM 3 64```
+    * ```sh run.sh STATE 3```
+    * ```sh create_peer.sh 4 <Server_IP>```
+    * ```sh run.sh BACKUP 1 <fileName> <replication>```
 
 
 

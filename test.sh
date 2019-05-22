@@ -31,12 +31,21 @@ echo $msg > /dev/tty
 echo $msg > /dev/tty
 local msg1="asking each peer for their state"
 local msg2="check their state on each tab"
+local msg3="sh run.sh STATE 1"
+local msg4="sh run.sh STATE 2"
+local msg5="sh run.sh STATE 3"
 echo $msg1 > /dev/tty
 echo $msg > /dev/tty
-./run.sh STATE 1
-./run.sh STATE 2
-./run.sh STATE 3
-
+echo $msg > /dev/tty
+echo $msg3 > /dev/tty
+gnome-terminal --tab --title="STATE 1" -- bash -c "sh run.sh STATE 1"
+$(confirm)
+echo $msg4 > /dev/tty
+gnome-terminal --tab --title="STATE 2" -- bash -c "sh run.sh STATE 2"
+$(confirm)
+echo $msg5 > /dev/tty
+gnome-terminal --tab --title="STATE 3" -- bash -c "sh run.sh STATE 3"
+echo $msg > /dev/tty
 echo $msg2 > /dev/tty 
 echo $msg > /dev/tty
 }
