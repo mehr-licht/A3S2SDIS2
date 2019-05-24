@@ -281,13 +281,12 @@ socket.setEnabledCipherSuites(defaultSuite);
 
 //[TODO]alterar relatório ENCRYPT
 //[TODO]alterar estrutura files
-//[TODO]alterar portos de 3000 para outro numero qq -> ver google usual user ports
 
 //[TODO]rever aquilo no Client e no Peer getRegistry
 
-//[TODO]ver porque só relica 1
+//[TODO]ver porque só relica 1  //devido a coisas no Backup.splitFile [DONE]
 //[TODO]ver porque só restaura 1  - problemas no Synchronized (peer.Peer ln 436)
-//[TODO]DELETE - é suposto só apagar os chunks que estão distribuidos?
+//[TODO]DELETE - é suposto só apagar os chunks que estão distribuidos? //deletFile[DONE]
 
 
 //BACKUP - probs na replic (se digo 2 com 3 peers, ele replica 1...)  (se digo 3 com 3 peers, ele replica 1...)

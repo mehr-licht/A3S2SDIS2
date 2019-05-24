@@ -75,22 +75,22 @@ $(confirm)
 echo " "
 echo " "
 
-echo "sudo sh killPort.sh 3000"
-sudo sh killPort.sh 3000
+echo "sudo sh killPort.sh 2000"
+sudo sh killPort.sh 2000
 
 echo " "
 echo " "
 $(confirm)
 
-echo "sudo sh killPort.sh 3001"
-sudo sh killPort.sh 3001
+echo "sudo sh killPort.sh 2001"
+sudo sh killPort.sh 2001
 
 echo " "
 echo " "
 $(confirm)
 
-echo "sudo sh killPort.sh 3002"
-sudo sh killPort.sh 3002
+echo "sudo sh killPort.sh 2002"
+sudo sh killPort.sh 2002
 
 echo " "
 echo " "
@@ -130,8 +130,8 @@ echo "%%%%%%%%%%%%%%%%%%%%%% create 2 servers %%%%%%%%%%%%%%%%%%%%%%"
 echo " "
 echo " "
 
-echo " ./create_server.sh 1 3000"
- ./create_server.sh 1 3000
+echo " ./create_server.sh 1 2000"
+ ./create_server.sh 1 2000
 
 echo " "
 echo " "
@@ -141,8 +141,8 @@ $(confirm)
 echo " "
 echo " "
 
-echo " ./create_server.sh 2 3001"
- ./create_server.sh 2 3001
+echo " ./create_server.sh 2 2001"
+ ./create_server.sh 2 2001
 
 echo " "
 echo " "
@@ -183,21 +183,6 @@ echo " ./create_peer.sh 3 localhost"
 echo " "
 echo " "
 $(state_confirm)
-
-
-################################### copy run.sh to directory
-echo "cp run.sh bin/Peers/Peer1/PeerDisk/MyFiles"
-cp run.sh bin/Peers/DiskPeer1/MyFiles
-echo "cp Untitled.png bin/Peers/PeerDisk1/MyFiles"
-cp Untitled.png bin/Peers/DiskPeer1/MyFiles
-
-
-
-echo " "
-echo " "
-$(confirm)
-
-
 
 
 

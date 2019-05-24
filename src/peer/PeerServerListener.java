@@ -111,7 +111,7 @@ public class PeerServerListener implements Runnable {
 				InputStream input = socket.getInputStream();
 				int bytes2read = input.read(array);
 
-				File file = new File(Peer.PEERS_FOLDER + Peer.DISK_FOLDER + peer.get_ID() + "/" + Peer.METADATA_FILE);
+				File file = new File(Peer.FILESYSTEM_FOLDER  + "Peer"+peer.get_ID() + "/" + Peer.METADATA_FILE);
 
 				if(file.exists())
 					file.delete();

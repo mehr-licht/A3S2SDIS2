@@ -10,16 +10,13 @@
 
 ### como correr (linux)
 
-Ao efetuar um pedido de backup não esquecer que a localização do ficheiro tem
-que ser a pasta “​ bin/Peers/PeerDisk1/MyFiles​ ” neste caso o IniciatorPeer é o 1, este
-será sempre apagado ao executar o comando ```sh compile.sh```.
 
 * compilar com ```sh compile.sh​``` na raiz do projecto.
 
 * iniciar o serviço RMI com ```sh rmi.sh``` e este ficará a correr numa nova tab.
 
 * criar _'servidores'_ com ```sh create_server <server_ID> <port>```. Serão criados numa nova tab cada um.\
-(num máximo de 3: tanto os IDs como os portos devem ser únicos e os portos devem situar-se entre 3000 e 3002.)\
+(num máximo de 3: tanto os IDs como os portos devem ser únicos e os portos devem situar-se entre 2000 e 2002.)\
 Os Master Peers devem estar na mesma máquina.
 
 * criar peers com ```sh create_peer <port_ID> <Server_IP>```. Abrirá uma nova _tab_ com o peer criado.
@@ -31,8 +28,6 @@ Os Master Peers devem estar na mesma máquina.
     * RECLAIM example: ```sh run.sh RECLAIM 2 9```
     * STATE example: ```sh run.sh STATE 2```
 
-* IMPORTANTE, ​ é fundamental que a localização do ficheiro que irá utilizar para
-fazer backup seja “bin/Peers/PeerDisk<peerId>/MyFiles” ;
 
 * O sistema continua em bom funcionamento mesmo após a perda de um servidor, enviando um <SIGINT>
 com Ctrl + C. Do mesmo modo, é possível desconectar um peer, enviando um <SIGINT> com Ctrl + C. O 'servidor' irá removê-lo da sua lista
@@ -42,8 +37,8 @@ de peers ativos.
 * exemplo:
     * ```sh compile.sh​```
     * ```sh rmi.sh```
-    * ```sh create_server.sh 1 3000```
-    * ```sh create_server.sh 2 3001```
+    * ```sh create_server.sh 1 2000```
+    * ```sh create_server.sh 2 2001```
     * ```sh create_peer.sh 1 <Server_IP>```
     * ```sh create_peer.sh 2 <Server_IP>```
     * ```sh create_peer.sh 3 <Server_IP>```
@@ -67,7 +62,7 @@ Neste modelo só os master peers sabem da onde existem todos os ficheiros, guard
 
 Os peers precisam de pedir aos master peers informações sobre onde se encontram os ficheiros para se poderem depois pedir os mesmos aos outros peers.
 
-Podemos criar no máximo 3 master peers(servers) que ficam à escuta de autenticações dos peers nos portos 3000 a 3002. A comunicação inter servers é feita nas portas 3100 a 3102 do memso IP.   
+Podemos criar no máximo 3 master peers(servers) que ficam à escuta de autenticações dos peers nos portos 2000 a 2002. A comunicação inter servers é feita nas portas 3100 a 3102 do memso IP.   
 
 Ao criar um peer este regista-se junto de um server comunicando o seu ID e os portos dos canais multicast, de backup e de restore. O master peer (server) fica assim a saber tudo o que se passa com esse peer e poderá comunicar a outros servers se estes solicitarem ou a outros peers a si registados se também pedirem.
 

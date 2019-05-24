@@ -109,22 +109,17 @@ public class Server_peer_listener implements Runnable {
       byte[] array = new byte[256000];
       InputStream input = socket.getInputStream();
       int bytesToRead = input.read(array);
-
       File new_file =
 					create_file_path();
-
       if (new_file.exists()) new_file.delete();
-
       FileOutputStream fos = new FileOutputStream(new_file);
       fos.write(array, 0, bytesToRead);
       fos.close();
-
       ArrayList<ServerToServerChannel> other_servers = Server.get_other_servers();
       for (ServerToServerChannel serverChannel : other_servers) {
         serverChannel.send_message("SAVE_METADATA " + peer_ID);
         serverChannel.send_bytes(array, bytesToRead);
       }
-
       System.out.println("Metadados do Peer" + peer_ID + " guardados com sucesso.");
     } catch (Exception e) {
       System.out.println("Erro ao guardar metadados do peer" + peer_ID);
@@ -142,7 +137,7 @@ public class Server_peer_listener implements Runnable {
 						+ Server.get_server_ID()
 						+ "/"
 						+ Server.PEER_FOLDER
-						+ peer_ID
+            + "Peer"+ peer_ID
 						+ "/"
 						+ Server.METADATA_FILE);
 	}

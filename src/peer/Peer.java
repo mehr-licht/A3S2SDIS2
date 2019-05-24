@@ -71,13 +71,13 @@ public class Peer implements My_Interface_Remote {
   /** 0 não existe, 1 existe, -1 à espera de resposta */
   private volatile int metadata_server;
 
-  public static final String PEERS_FOLDER = "Peers/"; // ..fileSystem
-  public static final String DISK_FOLDER = "DiskPeer"; // Peer
+  public static final String FILESYSTEM_FOLDER = "../fileSystem/"; // ..fileSystem
+ // public static final String DISK_FOLDER = "DiskPeer"; // Peer
 
-  public static final String FILES_FOLDER = "MyFiles/"; // ..Files
-  public static final String RESTORED_FOLDER = "RestoredFiles/"; // restored
-  public static final String CHUNKS_FOLDER = "Chunks/"; // nada  - cada chunk
-  public static final String METADATA_FILE = "metadata.ser";
+  public static final String FILES_FOLDER = "../files/"; // ..Files
+  public static final String RESTORED_FOLDER = "restored/"; // restored
+  public static final String CHUNKS_FOLDER = "backup/"; // nada  - cada chunk
+  public static final String METADATA_FILE = "db";
 
   private String host_IP;
   private SSLSocket socket;
@@ -106,8 +106,8 @@ public class Peer implements My_Interface_Remote {
     this.peer_ID = id;
     this.host_IP = host_IP;
 
-    String peer_disk = PEERS_FOLDER + DISK_FOLDER + id;
-    String backup_files = peer_disk + "/" + FILES_FOLDER;
+    String peer_disk = FILESYSTEM_FOLDER + "Peer"+id;
+    String backup_files = FILES_FOLDER;
     String chunks_files = peer_disk + "/" + CHUNKS_FOLDER;
     String restored_file = peer_disk + "/" + RESTORED_FOLDER;
 
@@ -204,7 +204,7 @@ public class Peer implements My_Interface_Remote {
    */
   public void get_metadata() { // throws InterruptedException, ExecutionException {
     File file =
-        new File(Peer.PEERS_FOLDER + Peer.DISK_FOLDER + this.peer_ID + "/" + Peer.METADATA_FILE);
+        new File(Peer.FILESYSTEM_FOLDER  + this.peer_ID + "/" + Peer.METADATA_FILE);
 
     if (file.exists()) {
       try {
@@ -227,7 +227,7 @@ public class Peer implements My_Interface_Remote {
     ObjectInputStream serverStream =
         new ObjectInputStream(
             new FileInputStream(
-                Peer.PEERS_FOLDER + Peer.DISK_FOLDER + this.peer_ID + "/" + Peer.METADATA_FILE));
+                Peer.FILESYSTEM_FOLDER  + "Peer"+this.peer_ID + "/" + Peer.METADATA_FILE));
     data_manager = (Manager) serverStream.readObject();
 
     serverStream.close();
@@ -277,7 +277,7 @@ public class Peer implements My_Interface_Remote {
   private int connect_to_port(SSLSocketFactory sf) {
     Random rand = new Random();
     int n = rand.nextInt(3);
-    int server_port = 3000 + n;
+    int server_port = 2000 + n;
 
     return connect_to_server(sf, n, server_port);
     // return server_port;
@@ -306,11 +306,11 @@ public class Peer implements My_Interface_Remote {
         connected = false;
         server_port++;
 
-        if (server_port == 3003) {
-          server_port = 3000;
+        if (server_port == 2003) {
+          server_port = 2000;
         }
 
-        if (server_port == 3000 + n) {
+        if (server_port == 2000 + n) {
           System.out.println("Não foi possível conectar a nenhum servidor");
           System.exit(-1);
         }
