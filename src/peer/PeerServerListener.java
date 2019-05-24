@@ -96,7 +96,7 @@ public class PeerServerListener implements Runnable {
 				
 			default:
 				System.out.println("Peer:: Erro ao processar a mensagem do servidor.");
-				System.out.println(msg);
+			 // System.out.println(msg);
 				break;
 		}
 	}

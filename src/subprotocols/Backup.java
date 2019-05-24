@@ -220,7 +220,7 @@ public class Backup implements Runnable {
    */
   private boolean wait_backup_result(
       ScheduledExecutorService scheduled_pool, List<Future<Boolean>> thread_results) {
-  	System.out.println(thread_results.size() );
+
     boolean backup_done = false;
     for (Future<Boolean> result : thread_results) {
       try {
