@@ -62,7 +62,7 @@ public class Manager implements Serializable {
       ObjectOutputStream oos =
           new ObjectOutputStream(
               new FileOutputStream(
-                  Peer.PEERS_FOLDER + Peer.DISK_FOLDER + this.peer_ID + "/" + Peer.METADATA_FILE));
+                  Peer.FILESYSTEM_FOLDER  +"Peer"+ this.peer_ID + "/" + Peer.METADATA_FILE));
 
       oos.writeObject(this);
 

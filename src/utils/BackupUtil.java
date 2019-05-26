@@ -16,10 +16,10 @@ import java.util.concurrent.TimeUnit;
 import peer.Peer;
 
 
-/** classe do sub-protocolo de BACKUP */
+/** classe da utilidade de BACKUP */
 public class BackupUtil implements Runnable {
 
-  private static final int BACKUP_INTERVAL = 30; // seconds
+  private static final int SEND_INTERVAL = 30; // seconds
   private Peer peer;
 
   /**
@@ -37,7 +37,7 @@ public class BackupUtil implements Runnable {
     while (true) {
       ScheduledExecutorService scheduledPool = Executors.newScheduledThreadPool(1);
       Future<Boolean> future =
-          scheduledPool.schedule(send_metadata, BACKUP_INTERVAL, TimeUnit.SECONDS);
+          scheduledPool.schedule(send_metadata, SEND_INTERVAL, TimeUnit.SECONDS);
       try {
         future.get();
       } catch (InterruptedException e) {
@@ -89,6 +89,6 @@ public class BackupUtil implements Runnable {
    * @return string concatenada com o caminho do ficheiro
    */
 	private File get_file_path() {
-    return new File(Peer.PEERS_FOLDER + Peer.DISK_FOLDER + peer.get_ID() + "/" + Peer.METADATA_FILE);
+    return new File(Peer.FILESYSTEM_FOLDER  + "Peer"+peer.get_ID() + "/" + Peer.METADATA_FILE);
   }
 }

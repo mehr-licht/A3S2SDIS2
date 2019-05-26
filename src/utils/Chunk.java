@@ -9,8 +9,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import peer.Peer.channel_type;
 import peer.Peer;
+import peer.Peer.channel_type;
 
 /** classe Chunk */
 public class Chunk implements Callable<Boolean> {
@@ -87,8 +87,8 @@ public class Chunk implements Callable<Boolean> {
    */
   private static File get_file_path(int peer_ID, String file_ID, String chunk_No) {
     return new File(
-        Peer.PEERS_FOLDER
-            + Peer.DISK_FOLDER
+        Peer.FILESYSTEM_FOLDER
+            + "Peer"
             + peer_ID
             + "/"
             + Peer.CHUNKS_FOLDER
@@ -221,7 +221,7 @@ public class Chunk implements Callable<Boolean> {
   private byte[] create_header() {
     String msg = "PUTCHUNK ";
     msg += this.peer.get_protocol_version() + " ";
-    msg += this.peer.get_ID() + " ";
+    msg += this.peer.get_ID() + " "; // não pode
     msg += this.file_ID + " ";
     msg += this.chunk_no + " ";
     msg += this.replication + " ";

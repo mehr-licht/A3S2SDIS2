@@ -36,9 +36,9 @@ public class Restore implements Runnable {
 	 */
 	public Restore(String filename, Peer peer) {
 		this.file_chunks = new HashMap<>();
-		this.filepath = Peer.PEERS_FOLDER + Peer.DISK_FOLDER + peer.get_ID() + "/" + Peer.FILES_FOLDER + filename;
+		this.filepath = Peer.FILES_FOLDER + filename;
 		this.peer = peer;
-		this.new_filepath = Peer.PEERS_FOLDER + Peer.DISK_FOLDER + this.peer.get_ID() + "/" + Peer.RESTORED_FOLDER + filename;
+		this.new_filepath = Peer.FILESYSTEM_FOLDER  + "Peer"+this.peer.get_ID() + "/" + Peer.RESTORED_FOLDER + filename;
 	}
 
 	/**
@@ -76,7 +76,7 @@ public class Restore implements Runnable {
 			} else {
 
 				byte[] chunk = this.peer.get_restored_chunks().get(this.actual_chunk + "_" + this.file_ID);
-				
+				System.out.println("byte[] chunk = "+new String(this.peer.get_restored_chunks().get(this.actual_chunk + "_" + this.file_ID)));
 				String secret_key = "peer" + this.peer.get_ID();
 				AES AES = new AES();
 				byte[] chunk_decrypted = AES.decrypt(chunk, secret_key);

@@ -1,6 +1,6 @@
 #!/bin/bash
 rm -r bin
 mkdir -p bin
-mkdir -p bin/my_peers
+mkdir -p fileSystem
 
 javac $(find src | grep .java) -d bin
