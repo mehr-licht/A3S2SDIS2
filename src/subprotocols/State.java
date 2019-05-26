@@ -1,5 +1,7 @@
 package subprotocols;
 
+import static peer.Peer.FILES_FOLDER;
+
 import peer.Peer;
 
 /**
@@ -44,7 +46,7 @@ public class State {
 	 * @param file_id identificador do ficheiro
 	 */
 	private void create_oupput(String filename, String file_id) {
-		this.state += "\n- File Path: " + Peer.PEERS_FOLDER + Peer.DISK_FOLDER + peer.get_ID() + "/" + Peer.FILES_FOLDER + filename;
+		this.state += "\n- File Path: " + FILES_FOLDER + filename;
 		this.state += "\n- File ID: "+ file_id + " - Desired Replication Degree: " + this.peer.get_manager().get_degrees().get("0_"+ file_id);
 
 		if(this.peer.get_manager().get_backup_state().get(file_id) == false) {

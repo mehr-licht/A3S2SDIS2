@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocket;
+import peer.Peer;
 
 /** classe Server */
 public class Server {
@@ -24,7 +25,7 @@ public class Server {
   private static ArrayList<ServerToServerChannel> other_servers;
 
   public static final String SERVER_FOLDER = "Server";
-  public static final String METADATA_FILE = "metadata.ser";
+  public static final String METADATA_FILE = "db";
   public static final String PEER_FOLDER = "Peer";
   private static int server_ID;
   private int server_port;
@@ -40,8 +41,8 @@ public class Server {
     int server_ID = Integer.valueOf(args[0]);
     int server_port = Integer.valueOf(args[1]);
 
-    if (server_port < 3000 || server_port > 3002) {
-      System.out.println("porto tem de estar compreendido entre 3000 e 3002");
+    if (server_port < 2000 || server_port > 2002) {
+      System.out.println("porto tem de estar compreendido entre 2000 e 2002");
       System.exit(-1);
     }
 
@@ -73,7 +74,7 @@ public class Server {
   public Server(int id, int port) throws UnknownHostException{
     server_ID = id;
     this.server_port = port;
-    make_directory(Server.SERVER_FOLDER + server_ID);
+    make_directory(Peer.FILESYSTEM_FOLDER+ Server.SERVER_FOLDER + server_ID);
 
 		set_key_truststore();
 
@@ -190,26 +191,26 @@ public class Server {
 	private int get_server_port(int port, String next) {
     int other_port = -1;
     switch (port) {
-      case 3000:
+      case 2000:
         if (next.equals("FIRST")) {
-          other_port = 3001;
+          other_port = 2001;
         } else {
-          other_port = 3002;
+          other_port = 2002;
         }
         break;
-      case 3001:
+      case 2001:
         if (next.equals("FIRST")) {
-          other_port = 3000;
+          other_port = 2000;
         } else {
-          other_port = 3002;
+          other_port = 2002;
         }
         break;
 
-      case 3002:
+      case 2002:
         if (next.equals("FIRST")) {
-          other_port = 3000;
+          other_port = 2000;
         } else {
-          other_port = 3001;
+          other_port = 2001;
         }
         break;
 
@@ -363,7 +364,7 @@ public class Server {
    * @return caminho do ficheiro
    */
   private static File create_filepath(int peer_ID) {
-    return new File(Server.SERVER_FOLDER + server_ID + "/" + Server.PEER_FOLDER + peer_ID);
+    return new File(Peer.FILESYSTEM_FOLDER+Server.SERVER_FOLDER + server_ID + "/" + Server.PEER_FOLDER + peer_ID);
   }
 
   /**

@@ -430,8 +430,8 @@ public class Protocol_handler implements Runnable {
   Runnable store_chunk =
       () -> {
         String filePath =
-            Peer.PEERS_FOLDER
-                + Peer.DISK_FOLDER
+            Peer.FILESYSTEM_FOLDER
++"Peer"
                 + peer.get_ID()
                 + "/"
                 + Peer.CHUNKS_FOLDER
