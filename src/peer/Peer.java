@@ -14,6 +14,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -32,7 +33,7 @@ import utils.My_Interface_Remote;
 import utils.Protocol_handler;
 
 /** classe Peer */
-public class Peer implements My_Interface_Remote{
+public class Peer implements My_Interface_Remote {
 
   /** portos de entrada no canais */
   public class PeerEndpoint {
@@ -63,19 +64,20 @@ public class Peer implements My_Interface_Remote{
 
   private Manager data_manager;
 
-  private volatile ArrayList<PeerEndpoint> endpoints;
+  private volatile ArrayList<PeerEndpoint>
+      endpoints; // = new Collections.synchronizedList(new ArrayList<PeerEndpoint>());
   private volatile boolean collected_all_peers;
 
   /** 0 não existe, 1 existe, -1 à espera de resposta */
   private volatile int metadata_server;
 
-  public static final String PEERS_FOLDER = "Peers/";
-  public static final String DISK_FOLDER = "DiskPeer";
+  public static final String FILESYSTEM_FOLDER = "../fileSystem/"; // ..fileSystem
+ // public static final String DISK_FOLDER = "DiskPeer"; // Peer
 
-  public static final String FILES_FOLDER = "MyFiles/";
-  public static final String RESTORED_FOLDER = "RestoredFiles/";
-  public static final String CHUNKS_FOLDER = "Chunks/";
-  public static final String METADATA_FILE = "metadata.ser";
+  public static final String FILES_FOLDER = "../files/"; // ..Files
+  public static final String RESTORED_FOLDER = "restored/"; // restored
+  public static final String CHUNKS_FOLDER = "backup/"; // nada  - cada chunk
+  public static final String METADATA_FILE = "db";
 
   private String host_IP;
   private SSLSocket socket;
@@ -104,8 +106,8 @@ public class Peer implements My_Interface_Remote{
     this.peer_ID = id;
     this.host_IP = host_IP;
 
-    String peer_disk = PEERS_FOLDER + DISK_FOLDER + id;
-    String backup_files = peer_disk + "/" + FILES_FOLDER;
+    String peer_disk = FILESYSTEM_FOLDER + "Peer"+id;
+    String backup_files = FILES_FOLDER;
     String chunks_files = peer_disk + "/" + CHUNKS_FOLDER;
     String restored_file = peer_disk + "/" + RESTORED_FOLDER;
 
@@ -202,7 +204,7 @@ public class Peer implements My_Interface_Remote{
    */
   public void get_metadata() { // throws InterruptedException, ExecutionException {
     File file =
-        new File(Peer.PEERS_FOLDER + Peer.DISK_FOLDER + this.peer_ID + "/" + Peer.METADATA_FILE);
+        new File(Peer.FILESYSTEM_FOLDER  + this.peer_ID + "/" + Peer.METADATA_FILE);
 
     if (file.exists()) {
       try {
@@ -225,7 +227,7 @@ public class Peer implements My_Interface_Remote{
     ObjectInputStream serverStream =
         new ObjectInputStream(
             new FileInputStream(
-                Peer.PEERS_FOLDER + Peer.DISK_FOLDER + this.peer_ID + "/" + Peer.METADATA_FILE));
+                Peer.FILESYSTEM_FOLDER  + "Peer"+this.peer_ID + "/" + Peer.METADATA_FILE));
     data_manager = (Manager) serverStream.readObject();
 
     serverStream.close();
@@ -275,7 +277,7 @@ public class Peer implements My_Interface_Remote{
   private int connect_to_port(SSLSocketFactory sf) {
     Random rand = new Random();
     int n = rand.nextInt(3);
-    int server_port = 3000 + n;
+    int server_port = 2000 + n;
 
     return connect_to_server(sf, n, server_port);
     // return server_port;
@@ -294,16 +296,21 @@ public class Peer implements My_Interface_Remote{
     while (!connected) {
       try {
         socket = (SSLSocket) sf.createSocket(this.host_IP, server_port);
+        // enable TLSv1.1 only
+       // socket.setEnabledProtocols(new String[] {"TLSv1.1"});
+
+        // enable a block cipher
+        //socket.setEnabledCipherSuites(new String[] {"TLS_RSA_WITH_AES_128_CBC_SHA"});
         connected = true;
       } catch (IOException e) {
         connected = false;
         server_port++;
 
-        if (server_port == 3003) {
-          server_port = 3000;
+        if (server_port == 2003) {
+          server_port = 2000;
         }
 
-        if (server_port == 3000 + n) {
+        if (server_port == 2000 + n) {
           System.out.println("Não foi possível conectar a nenhum servidor");
           System.exit(-1);
         }
@@ -423,28 +430,30 @@ public class Peer implements My_Interface_Remote{
    * @throws IOException Excepção de entrada/saída
    */
   private void loop_endpoints(channel_type type, byte[] packet) throws IOException {
-    for (PeerEndpoint peer : endpoints) {
-      if (peer.id == peer_ID) { // Não enviar para si proprio
-        continue;
+    synchronized (endpoints) {
+      Iterator<PeerEndpoint> iter = endpoints.iterator();
+      while (iter.hasNext()) {
+        PeerEndpoint peer = iter.next();
+        // for (PeerEndpoint peer : endpoints) {
+        if (peer.id == peer_ID) { // Não enviar para si proprio
+          continue;
+        }
+        InetAddress address = InetAddress.getByName(peer.host);
+        int port = -1;
+        switch (type) {
+          case MC:
+            port = peer.MC_port;
+            break;
+          case MDB:
+            port = peer.MDB_port;
+            break;
+          case MDR:
+            port = peer.MDR_port;
+            break;
+        }
+        DatagramPacket send_packet = new DatagramPacket(packet, packet.length, address, port);
+        sender_socket.send(send_packet);
       }
-
-      InetAddress address = InetAddress.getByName(peer.host);
-
-      int port = -1;
-      switch (type) {
-        case MC:
-          port = peer.MC_port;
-          break;
-        case MDB:
-          port = peer.MDB_port;
-          break;
-        case MDR:
-          port = peer.MDR_port;
-          break;
-      }
-
-      DatagramPacket send_packet = new DatagramPacket(packet, packet.length, address, port);
-      sender_socket.send(send_packet);
     }
   }
 
@@ -530,7 +539,7 @@ public class Peer implements My_Interface_Remote{
    * @throws RemoteException
    */
   @Override
-  public void backup(String filename, int replication_degree){
+  public void backup(String filename, int replication_degree) {
     System.out.println("[SERVER " + this.peer_ID + "] Starting backup protocol...");
     // try {
     new Thread(new subprotocols.Backup(filename, replication_degree, this)).start();

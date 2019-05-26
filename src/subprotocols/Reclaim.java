@@ -28,8 +28,8 @@ public class Reclaim implements Runnable {
     this.peer = peer;
     this.disk_used = peer.get_manager().get_space_used();
     this.chunks_path =
-        Peer.PEERS_FOLDER + Peer.DISK_FOLDER + this.peer.get_ID() + "/" + Peer.CHUNKS_FOLDER;
-    this.chunks_deleted = new ArrayList<String>();
+        Peer.FILESYSTEM_FOLDER  + "Peer"+this.peer.get_ID() + "/" + Peer.CHUNKS_FOLDER;
+    this.chunks_deleted = new ArrayList<>();
   }
 
   /** run do Reclaim */

@@ -1,5 +1,7 @@
 package server;
 
+import static peer.Peer.FILESYSTEM_FOLDER;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -142,7 +144,7 @@ public class ServerToServerChannel implements Runnable {
    * @return caminho do ficheiro
    */
   private File create_filepath(int peer_ID) {
-    return new File(
+    return new File(FILESYSTEM_FOLDER+
         Server.SERVER_FOLDER
             + Server.get_server_ID()
             + "/"
