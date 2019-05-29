@@ -54,6 +54,11 @@ de peers ativos.
 
 
 
+>Descrição\
+Which should describe the main features of your project, including the operations supported by the backup service, as well as a summary of the features that raises the ceiling of your grade above the mininum, namely whether you use threads or not, JSSE, or whether you address scalability or fault-tolerance. This section is mandatory.
+
+>Note that references to the code should include both the name of the source code file and line numbers. If you wish you can add additional sections.
+
 ### Arquitectura
 
 A arquitectura escolhida para a implementação deste trabalho segue um modelo (semi-)centralizado com um master peer, podendo ser-lhe adicionado até mais dois peers para melhorar a fault tolerance (redundância por replicação).
@@ -80,9 +85,23 @@ Para esse efeito foram criados:
     
 * a comunicação entre peers é efectuada através de UDP depois do master Peer informar a qual se deve ligar, pois pela internet já não é viável usarmos multicast.
 
-### Implementação
+### Protocolos
+>In this section you must describe the protocols that you have implemented, 
+as well as the underlying transport protocols. 
+If you used RMI, you must describe the "remote interface". 
+If you used either TCP (with or without JSSE) or UDP, you must specify 
+the format of the messages, as well as the rules used for exchanging these messages. 
+You must also include references to the source code files with the implementation of these protocols. 
 
-#### concorrência
+
+
+
+### concorrência
+>In this section you must describe how do you support 
+the handling of concurrent service requests. 
+This may be using threads, thread_pools, Java NIO, etc.
+ You must include references to the relevant code. 
+
 
 Para resolver os problemas da concorrência tivemos de abordar cinco aspectos:
 
@@ -104,7 +123,14 @@ Para resolver os problemas da concorrência tivemos de abordar cinco aspectos:
  
 
 
-#### segurança
+### JSSE
+>In this section you should describe when do you use JSEE, 
+i.e. in which of the protocols described in the previous section, and why.
+ Furthermore, you should describe which features of JSSE do you use and why,
+  e.g. whether you require client authentication, which cypher-suites you use,
+   or whether you use the SLEngine class.
+    Again, you must include references to the relevant code.
+
 
 Nesta secção explicamos como tentamos garantir a autenticidade, confidencialidade e a integridade.
 
@@ -114,7 +140,8 @@ A confidencialidade, ou seja, impedir que informação sensível chegue seja ace
 
 A integridade, isto é, o receptor ter garantia que os dados vieram do emissor e que os dados não foram alterados por terceiros durante o percurso, é também sustentada na encriptação.
 
-##### autenticação SSL
+
+#### autenticação SSL
 
 Cada peer tem uma peerkey e cada server tem uma serverKey que são as suas senhas de autenticação.
 
@@ -122,7 +149,8 @@ Do mesmo modo, cada peer e cada server possuêm uma trustStore onde guardam os c
 
 Com este sistema, oferecemos uma garantia de que o servidor só aceita informações de quem conhece.
 
-##### encriptação
+
+#### encriptação
 
 A cifra é inicializada com uma chave AES de 256bit 
 com vector de inicialização especificado de modo aleatório
@@ -143,7 +171,34 @@ A desencriptação acontece aquando do restore. A mensagem é decifrado novament
 
 Deste modo garante-se a confidencialidade já que mais nenhum agente externo consegue decifrar os dados.
 
-#### tolerância a falhas
+
+
+### escalabilidade
+>This section is mandatory only if your service includes scalability provisions.
+ In this section you should describe how your design or implementation
+  contribute to the scalability of your service implementation. 
+  For any of the suggested features in the assignment description, 
+  or additional features, that you have adopted, you must describe
+   how it is implemented/used and why.
+    Again, you must include references to the relevant code.
+
+ 
+Para garantir que o sistema e a informação estão sempre disponíveis e devido à arquitectura semi-centralizada implementada, podemos ter mais que um master peer.
+
+Assim, se um  master peer for abaixo, os peers que estiverem registados consigo irão ligar-se a outro 'servidor' activo. Só se não houver 'servidores' onde se ligar é que um peer termina.
+
+Na autenticação de peers, estes ligam-se de forma aleatória a um 'servidor' que esteja activo. Havendo pelo menos um 'servidor' activo, sabe-se que um novo peer tem sempre a quem se ligar.
+
+
+### tolerância a falhas
+>This section is mandatory only if your service includes fault-tolerance provisions.
+ In this section you should describe how your design or implementation contribute
+  to the fault-tolerance of your service implementation. 
+  For any of the suggested features in the assignment description, or 
+ additional features, that you have adopted, you must describe how it is
+ implemented/used and why. Again, you must include references to the relevant code.
+  
+
 
 A tolerância a falhas implica que o sistema sobrevive a uma falha de qualquer um dos seus nós em qualquer altura.
 
@@ -152,12 +207,3 @@ Para garantir isso, os peers partilham a informação sobre os seus dados com o 
 * Quando um peer se torna activo verifica se tem metadados. Se os tiver carrega-os. Se não os tiver pergunta ao seu 'servidor' se há metadados dele. Se houver, o 'servidor' envia-lhe o ficheiro e ele carrega-os.
 
 Deste modo, caso um peer e/ou o seu servidor forem abaixo, quando o peer se voltar a autenticar (a qualquer servidor, ver a escalabilidade), volta a ter toda a informação relativa aos seus dados. 
-
-
-#### escalabilidade e disponibilidade
- 
-Para garantir que o sistema e a informação estão sempre disponíveis e devido à arquitectura semi-centralizada implementada, podemos ter mais que um master peer.
-
-Assim, se um  master peer for abaixo, os peers que estiverem registados consigo irão ligar-se a outro 'servidor' activo. Só se não houver 'servidores' onde se ligar é que um peer termina.
-
-Na autenticação de peers, estes ligam-se de forma aleatória a um 'servidor' que esteja activo. Havendo pelo menos um 'servidor' activo, sabe-se que um novo peer tem sempre a quem se ligar.
