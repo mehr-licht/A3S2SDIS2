@@ -1,5 +1,6 @@
 #!/bin/bash
-rm -r bin
+rm -rf bin
+rm -rf fileSystem
 mkdir -p bin
 mkdir -p fileSystem
 

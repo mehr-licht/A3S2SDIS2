@@ -209,6 +209,7 @@ echo " "
 echo " "
 
 
+echo "./run.sh RESTORE 1 'run.sh'"
  ./run.sh RESTORE 1 "run.sh"
 
 
@@ -217,6 +218,49 @@ echo " "
 $(state_confirm)
 
 echo " "
+
+
+###################################### DELETE
+echo " "
+echo " "
+echo "%%%%%%%%%%%%%%%%%%%%%% DELETE %%%%%%%%%%%%%%%%%%%%%%"
+echo " "
+echo " "
+
+echo "./run.sh DELETE 1 'run.sh'"
+ ./run.sh DELETE 1 "run.sh"
+ echo " "
+echo "please confirm that replicated chunks were deleted"
+echo " "
+$(confirm)
+echo " "
+echo "./run.sh DELETE 1 'Untitled.png'"
+ ./run.sh DELETE 1 "Untitled.png"
+echo "an error must appear"
+
+echo " "
+$(confirm)
+echo " "
+echo " "
+$(state_confirm)
+
+echo " "
+###################################### RECLAIM
+echo " "
+echo " "
+echo "%%%%%%%%%%%%%%%%%%%%%% RECLAIM %%%%%%%%%%%%%%%%%%%%%%"
+echo " "
+echo " "
+
+echo "./run.sh RECLAIM 1 5"
+ ./run.sh RECLAIM 1 5
+ echo " "
+echo "please confirm that replicated chunks were deleted"
+echo " "
+gnome-terminal --tab --title="STATE 1" -- bash -c "./run.sh STATE 1"
+$(confirm)
+echo " "
+
 echo " %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
 echo " %%%%%%%%%%%              %%%%%%%%%%%"
 echo " %%%%%%%%%%% all tests ok %%%%%%%%%%%"
