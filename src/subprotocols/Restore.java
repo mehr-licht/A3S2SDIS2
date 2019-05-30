@@ -76,7 +76,7 @@ public class Restore implements Runnable {
 			} else {
 
 				byte[] chunk = this.peer.get_restored_chunks().get(this.actual_chunk + "_" + this.file_ID);
-				System.out.println("byte[] chunk = "+new String(this.peer.get_restored_chunks().get(this.actual_chunk + "_" + this.file_ID)));
+				//System.out.println("byte[] chunk = "+new String(this.peer.get_restored_chunks().get(this.actual_chunk + "_" + this.file_ID)));
 				String secret_key = "peer" + this.peer.get_ID();
 				AES AES = new AES();
 				byte[] chunk_decrypted = AES.decrypt(chunk, secret_key);
