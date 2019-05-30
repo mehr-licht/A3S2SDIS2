@@ -70,147 +70,13 @@ public class Backup implements Runnable {
     }
 
     try {
-      splitFile();
+      split_file();
     } catch (IOException e) {
       System.out.println("Ficheiro não encontrado.");
     }
   }
 
-  /**
-   * extrai cabeçalho
-   *
-   * @throws FileNotFoundException Excepção de ficheiro não encontrado
-   * @throws IOException Excepção de entrada/saída
-   */
-  /*private void split_file() throws FileNotFoundException, IOException {
-    byte[] buffer = new byte[CHUNK_MAX_SIZE];
-    int chunk_no = 0;
-    List<Future<Boolean>> thread_results = new ArrayList<>();
-    ScheduledExecutorService scheduled_pool = Executors.newScheduledThreadPool(100);
 
-    DateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-    Date date = new Date();
-    System.out.println("Vou comecar o backup: " + format.format(date));
-
-    this.peer.get_manager().get_files_ids().put(this.filename, this.file_ID);
-    this.peer.get_manager().get_backup_state().put(this.file_ID, false);
-    //this.peer.server_connection();//AQUI socket= e no outro lado devolve socket // depois socket.setEnabled e envia para metodos filhos até mensagem
-
-    File file = new File(this.filepath);
-
-    boolean need_chunk_zero = false;
-
-    if ((file.length() % CHUNK_MAX_SIZE) == 0) {
-      need_chunk_zero = true;
-    }
-
-		read_chunks(buffer, chunk_no, thread_results, scheduled_pool, file, need_chunk_zero);
-
-		boolean backup_done = wait_backup_result(scheduled_pool, thread_results);
-
-		print_backup_done(format, backup_done);
-
-		this.peer.get_manager().save_metadata();
-  }*/
-
-	/**
-	 * Notifica se o backup foi feito
-	 * @param format formato da data
-	 * @param backup_done se backup foi feito
-	 */
-	/*private void print_backup_done(DateFormat format, boolean backup_done) {
-		Date date2 = new Date();
-		if (backup_done) {
-			System.out.println("BackupUtil completed. " + format.format(date2));
-			this.peer.get_manager().get_backup_state().replace(file_ID, true);
-		} else {
-			System.out.println("BackupUtil was not completed. " + format.format(date2));
-		}
-	}*/
-
-	/**
-	 * Lê chunks
-	 * @param buffer buffer de entrada
-	 * @param chunk_no numero do chunk
-	 * @param thread_results
-	 * @param scheduled_pool SchedulePool
-	 * @param file ficheiro
-	 * @param need_chunk_zero
-	 * @throws IOException Excepção de entrada/saida
-	 */
-	/*private void read_chunks(byte[] buffer, int chunk_no, List<Future<Boolean>> thread_results,
-			ScheduledExecutorService scheduled_pool, File file, boolean need_chunk_zero)
-			throws IOException {
-		try (FileInputStream fis = new FileInputStream(file);
-				BufferedInputStream bis = new BufferedInputStream(fis)) {
-
-			chunk_no = read_loop(buffer, chunk_no, thread_results, scheduled_pool, bis);
-
-			if (need_chunk_zero) {
-				make_chunk(chunk_no, thread_results, scheduled_pool);
-			}
-		}
-	}*/
-
-	/**
-	 * Cria o chunk
-	 * @param chunk_no numero do chunk
-	 * @param thread_results lista de resultados
-	 * @param scheduled_pool SchedulePool
-	 */
-	/*private void make_chunk(int chunk_no, List<Future<Boolean>> thread_results,
-			ScheduledExecutorService scheduled_pool) {
-		byte[] empty = new byte[0];
-
-		Future<Boolean> result =
-				scheduled_pool.submit(
-						new Chunk(this.file_ID, chunk_no, empty, this.replication_degree, this.peer));
-		thread_results.add(result);
-		this.peer
-				.get_manager()
-				.get_degrees()
-				.put(chunk_no + "_" + this.file_ID, this.replication_degree);
-		chunk_no++;
-	}*/
-
-	/**
-	 * loop de leitura
-	 * @param buffer buffer de entrada
-	 * @param chunk_no numero do chunk
-	 * @param thread_results lista dos resultados
-	 * @param scheduled_pool SchedulePool
-	 * @param bis buffer input stream
-	 * @return numero do chunk
-	 * @throws IOException excepção de entrada/saída
-	 */
-	/*private int read_loop(byte[] buffer, int chunk_no, List<Future<Boolean>> thread_results,
-			ScheduledExecutorService scheduled_pool, BufferedInputStream bis) throws IOException {
-		int size;
-		while ((size = bis.read(buffer)) > 0) {
-			byte[] content = new byte[size];
-			System.arraycopy(buffer, 0, content, 0, size);
-
-			String secret_key = "peer" + this.peer.get_ID();
-			AES AES = new AES();
-			byte[] content_encrypted = AES.encrypt(content, secret_key);
-
-
-
-			Future<Boolean> result =
-					scheduled_pool.submit(
-							new Chunk(
-									this.file_ID, chunk_no, content_encrypted, this.replication_degree, this.peer));
-			thread_results.add(result);
-
-			this.peer
-					.get_manager()
-					.get_degrees()
-					.put(chunk_no + "_" + this.file_ID, this.replication_degree);
-			chunk_no++;
-		}
-		return chunk_no;
-	}
-*/
 	/**
    * Espera pelas threads do chunk
    *
@@ -240,79 +106,121 @@ public class Backup implements Runnable {
   }
 
 
-
-	private void splitFile() throws FileNotFoundException, IOException {
+	/**
+	 * extrai cabeçalho
+	 *
+	 * @throws FileNotFoundException Excepção de ficheiro não encontrado
+	 * @throws IOException Excepção de entrada/saída
+	 */
+	private void split_file() throws  IOException {
 		byte[] buffer = new byte[CHUNK_MAX_SIZE];
-		int chunkNr = 0;
-		List<Future<Boolean>> threadResults = new ArrayList<>();
-		ScheduledExecutorService scheduledPool = Executors.newScheduledThreadPool(100);
+		int chunk_no = 0;
+		List<Future<Boolean>> thread_results = new ArrayList<>();
+		ScheduledExecutorService scheduled_pool = Executors.newScheduledThreadPool(100);
 
-		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		DateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 		Date date = new Date();
-		System.out.println("Vou comecar o backup: " + dateFormat.format(date));
+		System.out.println("Vou comecar o backup: " + format.format(date));
 
 		this.peer.get_manager().get_files_ids().put(this.filename, this.file_ID);
 		this.peer.get_manager().get_backup_state().put(this.file_ID, false);
 
 		File file = new File(this.filepath);
 
-		boolean needChunkZero = false;
+		boolean need_empty_chunk = false;
 
 		if((file.length() % CHUNK_MAX_SIZE) == 0) {
-			needChunkZero = true;
+			need_empty_chunk = true;
 		}
 
 		try (FileInputStream fis = new FileInputStream(file); BufferedInputStream bis = new BufferedInputStream(fis)) {
-			int size = 0;
-
-			chunkNr = while1(buffer, chunkNr, threadResults, scheduledPool, bis);
-
-			//Add last chunk with zero length
-			if(needChunkZero) {
-				byte[] empty = new byte[0];
-
-				Future<Boolean> result = scheduledPool.submit(new Chunk(this.file_ID, chunkNr, empty, this.replication_degree, this.peer));
-				threadResults.add(result);
-				this.peer.get_manager().get_degrees().put(chunkNr + "_" + this.file_ID, this.replication_degree);
-				chunkNr++;
-			}
+			chunk_no = read_loop(buffer, chunk_no, thread_results, scheduled_pool, bis);
+			add_empty_chunk(chunk_no, thread_results, scheduled_pool, need_empty_chunk);
 		}
 
-		boolean backupDone = wait_backup_result(scheduledPool, threadResults);
+		boolean backup_done = wait_backup_result(scheduled_pool, thread_results);
 
-		if(backupDone) {
-			Date date2 = new Date();
-			System.out.println("Backup completed. " + dateFormat.format(date2));
-			this.peer.get_manager().get_backup_state().replace(file_ID, true);
-		} else {
-			Date date2 = new Date();
-			System.out.println("Backup was not completed. " + dateFormat.format(date2));
-		}
+		handle_backup_done(format, backup_done);
 
 		this.peer.get_manager().save_metadata();
 	}
 
-	private int while1(byte[] buffer, int chunkNr, List<Future<Boolean>> threadResults,
-			ScheduledExecutorService scheduledPool, BufferedInputStream bis) throws IOException {
+
+	/**
+	 * Cria o último chunk de 0bytes
+	 * @param chunk_no numero do chunk
+	 * @param thread_results lista de resultados
+	 * @param scheduled_pool SchedulePool
+	 * @param need_chunk_zero se é necessário ser criado
+	 */
+	private void add_empty_chunk(int chunk_no, List<Future<Boolean>> thread_results,
+			ScheduledExecutorService scheduled_pool, boolean need_chunk_zero) {
+
+		if(need_chunk_zero) {
+			byte[] empty = new byte[0];
+
+			Future<Boolean> result = scheduled_pool
+					.submit(new Chunk(this.file_ID, chunk_no, empty, this.replication_degree, this.peer));
+			thread_results.add(result);
+			this.peer.get_manager().get_degrees().put(chunk_no + "_" + this.file_ID, this.replication_degree);
+			chunk_no++;
+		}
+	}
+
+
+	/**
+	 * Notifica se o backup foi feito
+	 * @param format formato da data
+	 * @param backup_done se backup foi feito
+	 */
+	private void handle_backup_done(DateFormat format, boolean backup_done) {
+		if(backup_done) {
+			Date date2 = new Date();
+			System.out.println("Backup completed. " + format.format(date2));
+			this.peer.get_manager().get_backup_state().replace(file_ID, true);
+		} else {
+			Date date2 = new Date();
+			System.out.println("Backup was not completed. " + format.format(date2));
+		}
+	}
+
+	/**
+	 * loop de leitura
+	 * @param buffer buffer de entrada
+	 * @param chunk_no numero do chunk
+	 * @param thread_results lista dos resultados
+	 * @param scheduled_pool SchedulePool
+	 * @param bis buffer input stream
+	 * @return numero do chunk
+	 * @throws IOException excepção de entrada/saída
+	 */
+	private int read_loop(byte[] buffer, int chunk_no, List<Future<Boolean>> thread_results,
+			ScheduledExecutorService scheduled_pool, BufferedInputStream bis) throws IOException {
 		int size;
 		while ((size = bis.read(buffer)) > 0) {
 			byte[] content = new byte[size];
 			System.arraycopy(buffer, 0, content, 0, size);
+			byte[] content_encrypted = encrypt_chunk(content);
 
+			Future<Boolean> result = scheduled_pool
+					.submit(new Chunk(this.file_ID, chunk_no, content_encrypted, this.replication_degree, this.peer));
+			thread_results.add(result);
 
-			//Chunk encryption
-			String secretKey = "peer" + this.peer.get_ID();
-			AES AES = new AES();
-			byte[] contentEncrypted = AES.encrypt(content, secretKey) ;
-
-
-
-			Future<Boolean> result = scheduledPool.submit(new Chunk(this.file_ID, chunkNr, contentEncrypted, this.replication_degree, this.peer));
-			threadResults.add(result);
-
-			this.peer.get_manager().get_degrees().put(chunkNr + "_" + this.file_ID, this.replication_degree);
-			chunkNr++;
+			this.peer.get_manager().get_degrees().put(chunk_no + "_" + this.file_ID, this.replication_degree);
+			chunk_no++;
 		}
-		return chunkNr;
+		return chunk_no;
+	}
+
+
+	/**
+	 * Encripta o chunk
+	 * @param msg texto a ser encriptado
+	 * @return
+	 */
+	private byte[] encrypt_chunk(byte[] msg) {
+		String secret_key = "peer" + this.peer.get_ID();
+		AES AES = new AES();
+		return AES.encrypt(msg, secret_key);
 	}
 }

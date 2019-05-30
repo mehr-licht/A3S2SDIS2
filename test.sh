@@ -198,6 +198,11 @@ echo "./run.sh BACKUP 1 "run.sh" 2"
 
  echo " "
 echo " "
+echo "please confirm that there are replicated AND encrypted chunks on the backup folder of peers 2 and 3"
+$(confirm)
+echo " "
+echo " "
+
 $(state_confirm)
 
 
@@ -211,7 +216,8 @@ echo " "
 
 echo "./run.sh RESTORE 1 'run.sh'"
  ./run.sh RESTORE 1 "run.sh"
-
+echo "please confirm that there is an unencrypted file on the Restore folder of peer 1"
+$(confirm)
 
 echo " "
 echo " "
@@ -230,13 +236,13 @@ echo " "
 echo "./run.sh DELETE 1 'run.sh'"
  ./run.sh DELETE 1 "run.sh"
  echo " "
-echo "please confirm that replicated chunks were deleted"
+echo "please confirm that replicated chunks of run.sh were deleted on peers 2 and 3"
 echo " "
 $(confirm)
 echo " "
 echo "./run.sh DELETE 1 'Untitled.png'"
  ./run.sh DELETE 1 "Untitled.png"
-echo "an error must appear"
+echo "an error 'Erro ao apagar ficheiro: BackupUtil alheio' must appear on peer 1 tab"
 
 echo " "
 $(confirm)
@@ -251,11 +257,17 @@ echo " "
 echo "%%%%%%%%%%%%%%%%%%%%%% RECLAIM %%%%%%%%%%%%%%%%%%%%%%"
 echo " "
 echo " "
+ ./run.sh BACKUP 1 "Untitled.png" 2
+echo "please confirm that peer 2 has chunks of Untitled.png"
 
-echo "./run.sh RECLAIM 1 5"
- ./run.sh RECLAIM 1 5
+$(confirm)
+echo " "
+echo " "
+
+echo "./run.sh RECLAIM 2 5"
+ ./run.sh RECLAIM 2 5
  echo " "
-echo "please confirm that replicated chunks were deleted"
+echo "please confirm that replicated chunks were deleted on peer 2 after reclaim"
 echo " "
 gnome-terminal --tab --title="STATE 1" -- bash -c "./run.sh STATE 1"
 $(confirm)

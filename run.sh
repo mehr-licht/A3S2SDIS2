@@ -18,10 +18,10 @@ if [ $# -eq 2 ]; then
 	echo "$service needs more arguments"
  	
 echo .
-echo "BACKUP example: sh ./run.sh BACKUP 2 "files/cenas.txt" 1"
-echo "DELETE example: sh ./run.sh DELETE 2 "files/cenas.txt" "
-echo "RESTORE example: sh ./run.sh RESTORE 2 "files/cenas.txt" "
-echo "RECLAIM example: sh ./run.sh RECLAIM 2 9"
+echo "BACKUP example: sh ./run.sh BACKUP 2 "big.pdf" 1"
+echo "DELETE example: sh ./run.sh DELETE 2 "big.pdf"
+echo "RESTORE example: sh ./run.sh RESTORE 2 "big.pdf"
+echo "RECLAIM example: sh ./run.sh RECLAIM 2 64"
 echo "STATE example: sh ./run.sh STATE 2"
 	exit 1
   fi
